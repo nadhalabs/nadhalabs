@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nadha Labs — Web Development & Digital Services</title>
+<meta name="description" content="Nadha Labs builds professional websites, e-commerce stores, and digital products for businesses. Based in Kottiyam, Kerala.">
+<meta property="og:title" content="Nadha Labs — Web Development & Digital Services">
+<meta property="og:description" content="Professional websites, e-commerce, and digital services for growing businesses.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --black:        #000000;
+  --bg-2:         #0A0A0A;
+  --bg-3:         #111111;
+  --surface:      #1A1A1A;
+  --border:       #2A2A2A;
+  --border-bright:#5A5A5A;
+  --text-1:       #F5F5F5;
+  --text-2:       #A0A0A0;
+  --text-3:       #606060;
+  --accent:       #D0D0D0;
+  --white:        #FFFFFF;
+  --grad:         linear-gradient(135deg, #3A3A3A, #909090, #C8C8C8);
+  --ease:         cubic-bezier(0.4, 0, 0.2, 1);
+  --font-display: 'Syne', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--text-1);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  cursor: none;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button { cursor: none; font-family: var(--font-body); }
+input, textarea, select { font-family: var(--font-body); }
+
+@media (hover: none), (pointer: coarse) {
+  #cursor-dot, #cursor-ring { display: none !important; }
+  body, button, a { cursor: auto !important; }
+}
+
+/* ============================================================
+   CUSTOM CURSOR — desktop only
+   ============================================================ */
+#cursor-dot {
+  position: fixed; width: 8px; height: 8px;
+  background: var(--white); border-radius: 50%;
+  pointer-events: none; z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s var(--ease);
+}
+#cursor-ring {
+  position: fixed; width: 28px; height: 28px;
+  border: 1px solid rgba(255,255,255,0.4); border-radius: 50%;
+  pointer-events: none; z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: left 0.12s var(--ease), top 0.12s var(--ease);
+}
+
+/* ============================================================
+   INTRO SCREEN
+   ============================================================ */
+#intro {
+  position: fixed; inset: 0; background: var(--black);
+  z-index: 9999; display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.7s var(--ease);
+}
+#intro.fade-out { opacity: 0; }
+#intro.gone     { display: none; }
+.intro-logo {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  opacity: 0; animation: introFade 0.8s var(--ease) 0.1s forwards;
+}
+@keyframes introFade {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.intro-wordmark {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 700;
+  letter-spacing: 0.4em; text-transform: uppercase;
+  background: var(--grad); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  position: relative; overflow: hidden;
+}
+.intro-wordmark::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 1.5s var(--ease) 0.6s forwards;
+}
+@keyframes shimmer { 0% { left: -100%; } 100% { left: 200%; } }
+.intro-sub {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.4em;
+  color: var(--text-3); text-transform: uppercase;
+}
+
+/* ============================================================
+   LOGO
+   ============================================================ */
+.logo-full     { display: flex; align-items: center; gap: 12px; cursor: none; }
+.logo-img      { object-fit: contain; flex-shrink: 0; }
+.logo-wordmark {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 700;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  background: var(--grad); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.logo-wordmark span { font-weight: 300; opacity: 0.45; }
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 0 40px; height: 72px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.4s var(--ease), border-bottom 0.4s var(--ease);
+}
+#navbar.scrolled {
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-link {
+  font-size: 13px; color: var(--text-2); letter-spacing: 0.05em;
+  position: relative; transition: color 0.3s var(--ease);
+  background: none; border: none; padding: 0;
+}
+.nav-link::after {
+  content: ''; position: absolute; bottom: -2px; left: 0;
+  width: 0; height: 1px; background: var(--accent);
+  transition: width 0.3s var(--ease);
+}
+.nav-link:hover, .nav-link.active { color: var(--text-1); }
+.nav-link:hover::after, .nav-link.active::after { width: 100%; }
+.btn-nav-cta {
+  padding: 10px 22px; background: transparent;
+  border: 1px solid transparent;
+  background-image: linear-gradient(var(--black), var(--black)),
+    linear-gradient(135deg, #3A3A3A, #909090, #C8C8C8);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  color: var(--text-1); font-size: 13px; font-weight: 500;
+  letter-spacing: 0.08em; border-radius: 3px;
+  transition: all 0.3s var(--ease);
+}
+.btn-nav-cta:hover {
+  background-image: linear-gradient(#1A1A1A, #1A1A1A),
+    linear-gradient(135deg, #606060, #C8C8C8, #FFFFFF);
+  color: var(--white);
+}
+.hamburger {
+  display: none; flex-direction: column; gap: 5px;
+  background: none; border: none; padding: 4px;
+}
+.hamburger span { width: 22px; height: 1px; background: var(--text-1); display: block; transition: all 0.3s var(--ease); }
+
+/* ============================================================
+   MOBILE OVERLAY
+   ============================================================ */
+#mobile-overlay {
+  display: none; position: fixed; inset: 0;
+  background: var(--black); z-index: 999;
+  flex-direction: column; align-items: center; justify-content: center; gap: 28px;
+}
+#mobile-overlay.open { display: flex; }
+.mobile-link {
+  font-family: var(--font-display); font-size: 26px; font-weight: 700;
+  color: var(--text-2); letter-spacing: 0.05em;
+  opacity: 0; transform: translateY(20px);
+  transition: color 0.3s var(--ease), opacity 0.35s var(--ease), transform 0.35s var(--ease);
+  background: none; border: none;
+}
+#mobile-overlay.open .mobile-link                   { opacity: 1; transform: translateY(0); }
+#mobile-overlay.open .mobile-link:nth-child(2)      { transition-delay: 0.05s; }
+#mobile-overlay.open .mobile-link:nth-child(3)      { transition-delay: 0.10s; }
+#mobile-overlay.open .mobile-link:nth-child(4)      { transition-delay: 0.15s; }
+#mobile-overlay.open .mobile-link:nth-child(5)      { transition-delay: 0.20s; }
+#mobile-overlay.open .mobile-link:nth-child(6)      { transition-delay: 0.25s; }
+.mobile-link:hover { color: var(--white); }
+.close-btn {
+  position: absolute; top: 24px; right: 32px;
+  font-size: 24px; color: var(--text-2); background: none; border: none; line-height: 1;
+}
+
+/* ============================================================
+   PAGE SYSTEM
+   ============================================================ */
+.page        { display: none; min-height: 100vh; }
+.page.active { display: block; }
+
+/* ============================================================
+   GRID BACKGROUND
+   ============================================================ */
+.grid-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.grid-bg::before {
+  content: ''; position: absolute; inset: -50%;
+  background-image:
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 60px),
+    repeating-linear-gradient(45deg,  rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 60px);
+  animation: gridDrift 24s linear infinite;
+}
+@keyframes gridDrift { 0% { transform: translate(0,0); } 100% { transform: translate(60px,60px); } }
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+.eyebrow {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 300;
+  letter-spacing: 0.42em; color: var(--text-3); text-transform: uppercase; margin-bottom: 20px;
+}
+.display-hl {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 5vw, 70px);
+  font-weight: 700; line-height: 1.08; letter-spacing: -0.02em; color: var(--text-1);
+}
+.section-hl {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.5vw, 46px);
+  font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; color: var(--text-1);
+}
+.grad-text {
+  background: var(--grad); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.body-lg { font-size: 18px; line-height: 1.75; color: var(--text-2); }
+.body-md { font-size: 15px; line-height: 1.7;  color: var(--text-2); }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.container        { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+.container-narrow { max-width: 760px;  margin: 0 auto; padding: 0 40px; }
+section     { padding: 100px 0; position: relative; }
+.text-center { text-align: center; }
+.mt-8  { margin-top: 32px; }
+.mb-8  { margin-bottom: 32px; }
+.mb-12 { margin-bottom: 48px; }
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+.reveal {
+  opacity: 0; transform: translateY(22px);
+  transition: opacity 0.75s var(--ease), transform 0.75s var(--ease);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.d1 { transition-delay: 0.1s; } .d2 { transition-delay: 0.2s; }
+.d3 { transition-delay: 0.3s; } .d4 { transition-delay: 0.4s; }
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border); border-radius: 4px; padding: 36px;
+  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease), background 0.3s var(--ease);
+  position: relative; overflow: hidden;
+}
+.card:hover {
+  border-color: var(--border-bright);
+  transform: translateY(-4px);
+  background: rgba(255,255,255,0.05);
+}
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--grad); opacity: 0; transition: opacity 0.3s var(--ease);
+}
+.card:hover::before { opacity: 1; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.g2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 34px; background: var(--text-1);
+  color: var(--black); font-size: 14px; font-weight: 600;
+  letter-spacing: 0.08em; border: none; border-radius: 3px;
+  transition: all 0.3s var(--ease);
+}
+.btn-primary:hover    { background: var(--white); transform: translateY(-2px); }
+.btn-primary:disabled { opacity: 0.55; transform: none; cursor: not-allowed; }
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 34px; background: transparent;
+  color: var(--text-1); font-size: 14px; font-weight: 500;
+  letter-spacing: 0.08em; border: 1px solid var(--border);
+  border-radius: 3px; transition: all 0.3s var(--ease);
+}
+.btn-secondary:hover { border-color: var(--border-bright); color: var(--white); transform: translateY(-2px); }
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+.form-field { margin-bottom: 20px; }
+.form-field label {
+  display: block; font-size: 11px; letter-spacing: 0.18em;
+  color: var(--text-3); text-transform: uppercase; margin-bottom: 8px;
+}
+.form-input, .form-textarea, .form-select {
+  width: 100%; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 3px; padding: 13px 18px; color: var(--text-1);
+  font-size: 14px; transition: border-color 0.3s var(--ease); outline: none;
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+  border-color: var(--border-bright); background: rgba(255,255,255,0.04);
+}
+.form-textarea { min-height: 130px; resize: vertical; }
+.form-select   { appearance: none; }
+.form-success {
+  display: none; margin-top: 12px; padding: 16px 20px;
+  background: rgba(42,42,42,0.5); border: 1px solid var(--border-bright);
+  border-radius: 3px; font-family: var(--font-mono); font-size: 12px;
+  color: var(--text-1); letter-spacing: 0.08em; text-align: center;
+}
+.form-success.show { display: block; }
+.form-error {
+  display: none; margin-top: 12px; padding: 14px 18px;
+  background: rgba(180,30,30,0.1); border: 1px solid rgba(180,30,30,0.3);
+  border-radius: 3px; font-size: 13px; color: #f08080; text-align: center;
+}
+.form-error.show { display: block; }
+
+/* ============================================================
+   TABS
+   ============================================================ */
+.tab-bar {
+  display: flex; gap: 4px;
+  border-bottom: 1px solid var(--border); margin-bottom: 32px;
+}
+.tab-btn {
+  padding: 10px 20px; background: none; border: none;
+  font-size: 13px; font-weight: 500; color: var(--text-3);
+  letter-spacing: 0.08em;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: all 0.3s var(--ease);
+}
+.tab-btn.active { color: var(--text-1); border-bottom-color: var(--accent); }
+.tab-btn:hover  { color: var(--text-2); }
+.tab-pane        { display: none; }
+.tab-pane.active { display: block; }
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 2px; font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+}
+.badge-live {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border-bright);
+  color: var(--text-1);
+}
+.badge-soon {
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+  color: var(--text-3);
+}
+.badge-live::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: #8fbc8f; animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* ============================================================
+   PILLAR NUM / LABELS
+   ============================================================ */
+.pillar-num {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.22em; color: var(--text-3); margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   ICON BOX
+   ============================================================ */
+.icon-box {
+  width: 44px; height: 44px; border: 1px solid var(--border);
+  border-radius: 4px; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px; transition: border-color 0.3s var(--ease);
+}
+.card:hover .icon-box { border-color: var(--border-bright); }
+
+/* ============================================================
+   SERVICE DETAIL ROWS
+   ============================================================ */
+.service-row {
+  display: grid; grid-template-columns: 1fr 2fr; gap: 48px; align-items: start;
+}
+
+/* ============================================================
+   PROCESS STEPS
+   ============================================================ */
+.process-list { display: flex; flex-direction: column; gap: 0; max-width: 680px; margin: 0 auto; }
+.process-item {
+  display: grid; grid-template-columns: 60px 1fr; gap: 24px;
+  padding: 28px 0; border-bottom: 1px solid var(--border); align-items: start;
+}
+.process-item:last-child { border-bottom: none; }
+.process-num   { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.2em; padding-top: 4px; }
+.process-title { font-family: var(--font-display); font-size: 18px; font-weight: 600; color: var(--text-1); margin-bottom: 6px; }
+
+/* ============================================================
+   COURSE CARDS
+   ============================================================ */
+.course-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border); border-radius: 4px; padding: 36px;
+  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.course-card:hover { border-color: var(--border-bright); transform: translateY(-4px); }
+.course-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--grad); opacity: 0; transition: opacity 0.3s var(--ease);
+}
+.course-card:hover::before { opacity: 1; }
+.course-duration { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.15em; }
+.course-topics   { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.topic-pill {
+  padding: 4px 12px; background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border); border-radius: 2px;
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text-3); letter-spacing: 0.05em;
+}
+
+/* ============================================================
+   CONTACT INFO
+   ============================================================ */
+.contact-info { display: flex; flex-direction: column; gap: 12px; margin-top: 32px; }
+.contact-row {
+  display: flex; align-items: center; gap: 20px;
+  padding: 18px 24px; border: 1px solid var(--border);
+  border-radius: 4px; transition: border-color 0.3s var(--ease);
+}
+.contact-row:hover  { border-color: var(--border-bright); }
+.contact-label {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.2em; color: var(--text-3); text-transform: uppercase;
+  width: 68px; flex-shrink: 0;
+}
+.contact-value { font-size: 14px; color: var(--text-1); }
+
+/* ============================================================
+   PAGE HERO
+   ============================================================ */
+.page-hero {
+  padding: 160px 0 80px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.page-hero-inner { position: relative; z-index: 1; }
+
+/* ============================================================
+   DIVIDERS
+   ============================================================ */
+.divider      { height: 1px; background: var(--border); }
+.divider-grad { height: 1px; background: linear-gradient(90deg, transparent, var(--border-bright), transparent); }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer { background: var(--bg-2); border-top: 1px solid var(--border); padding: 60px 0 32px; }
+.footer-grid {
+  display: grid; grid-template-columns: 1.6fr 1fr 1fr;
+  gap: 48px; margin-bottom: 48px;
+}
+.footer-col-title {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.25em; color: var(--text-3);
+  text-transform: uppercase; margin-bottom: 20px;
+}
+.footer-links  { display: flex; flex-direction: column; gap: 12px; }
+.footer-link {
+  font-size: 14px; color: var(--text-2); background: none; border: none;
+  text-align: left; padding: 0; transition: color 0.3s var(--ease);
+}
+.footer-link:hover { color: var(--text-1); }
+.footer-tagline { font-size: 14px; color: var(--text-3); line-height: 1.7; }
+.footer-bottom {
+  padding-top: 24px; border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-copy   { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.08em; }
+.footer-legal  { display: flex; gap: 24px; }
+.footer-legal a { font-size: 12px; color: var(--text-3); transition: color 0.3s var(--ease); }
+.footer-legal a:hover { color: var(--text-1); }
+
+/* ============================================================
+   COOKIE BANNER
+   ============================================================ */
+#cookie-banner {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; padding: 16px 24px;
+  display: flex; align-items: center; gap: 20px; z-index: 8000;
+  transition: transform 0.5s var(--ease);
+  width: max-content; max-width: calc(100vw - 48px);
+}
+#cookie-banner.show { transform: translateX(-50%) translateY(0); }
+.cookie-text { font-size: 13px; color: var(--text-2); }
+.cookie-btns { display: flex; gap: 8px; flex-shrink: 0; }
+.c-btn {
+  padding: 7px 16px; border-radius: 3px; font-size: 12px;
+  font-weight: 500; letter-spacing: 0.06em;
+  border: 1px solid var(--border); background: none; color: var(--text-2);
+  transition: all 0.3s var(--ease);
+}
+.c-accept { background: var(--text-1); color: var(--black); border-color: var(--text-1); }
+.c-accept:hover { background: var(--white); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  .nav-links    { display: none; }
+  .btn-nav-cta  { display: none; }
+  .hamburger    { display: flex; }
+  .g3           { grid-template-columns: repeat(2, 1fr); }
+  .g2           { grid-template-columns: 1fr; }
+  .footer-grid  { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .service-row  { grid-template-columns: 1fr; gap: 20px; }
+}
+@media (max-width: 600px) {
+  #navbar           { padding: 0 20px; }
+  .container        { padding: 0 20px; }
+  .container-narrow { padding: 0 20px; }
+  section           { padding: 72px 0; }
+  .page-hero        { padding: 120px 0 60px; }
+  .g3               { grid-template-columns: 1fr; }
+  .footer-grid      { grid-template-columns: 1fr; }
+  .footer-bottom    { flex-direction: column; align-items: flex-start; }
+  .process-item     { grid-template-columns: 44px 1fr; gap: 16px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- CURSOR -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- INTRO -->
+<div id="intro">
+  <div class="intro-logo">
+    <img src="logo.png" alt="Nadha Labs" style="height:64px;width:64px;object-fit:contain;margin-bottom:8px;" onerror="this.style.display='none'">
+    <div class="intro-wordmark">NADHA LABS</div>
+    <div class="intro-sub">Web · Digital · Courses</div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <button class="logo-full" onclick="navigate('home')">
+    <img src="logo.png" alt="Nadha Labs" class="logo-img" style="height:34px;width:34px;" onerror="this.style.display='none'">
+    <span class="logo-wordmark">NADHA <span>LABS</span></span>
+  </button>
+  <div class="nav-links">
+    <button class="nav-link" onclick="navigate('home')">Home</button>
+    <button class="nav-link" onclick="navigate('services')">Services</button>
+    <button class="nav-link" onclick="navigate('courses')">Courses</button>
+    <button class="nav-link" onclick="navigate('about')">About</button>
+    <button class="btn-nav-cta" onclick="navigate('contact')">Contact Us</button>
+  </div>
+  <button class="hamburger" onclick="toggleMobile()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE OVERLAY -->
+<div id="mobile-overlay">
+  <button class="close-btn" onclick="toggleMobile()">✕</button>
+  <button class="mobile-link" onclick="go('home')">Home</button>
+  <button class="mobile-link" onclick="go('services')">Services</button>
+  <button class="mobile-link" onclick="go('courses')">Courses</button>
+  <button class="mobile-link" onclick="go('about')">About</button>
+  <button class="mobile-link" onclick="go('contact')">Contact</button>
+</div>
+
+<!-- ============================================================
+     PAGE: HOME
+     ============================================================ -->
+<div id="page-home" class="page active">
+
+  <!-- Hero -->
+  <section class="page-hero" style="padding:160px 0 100px;">
+    <div class="grid-bg"></div>
+    <div class="container page-hero-inner">
+      <div class="eyebrow reveal">Based in Kerala, India</div>
+      <h1 class="display-hl reveal d1" style="max-width:760px;margin:0 auto 28px;">
+        We Build Websites &amp; Digital Products<br>
+        <span class="grad-text">That Actually Work</span>
+      </h1>
+      <p class="body-lg reveal d2" style="max-width:520px;margin:0 auto 48px;">
+        Nadha Labs is a web development studio offering professional websites, e-commerce stores, landing pages, and digital services for businesses ready to grow online.
+      </p>
+      <div class="reveal d3" style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn-primary" onclick="navigate('contact')">Start a Project</button>
+        <button class="btn-secondary" onclick="navigate('services')">Our Services</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Services Overview -->
+  <section>
+    <div class="container">
+      <div class="text-center mb-12 reveal">
+        <div class="eyebrow">What We Do</div>
+        <h2 class="section-hl">Built for Real Business Needs</h2>
+      </div>
+      <div class="g3">
+        <div class="card reveal d1">
+          <div class="icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#606060" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <div class="pillar-num">01 — Web Development</div>
+          <h3 style="font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--text-1);margin-bottom:12px;">Business Websites</h3>
+          <p class="body-md">Clean, fast, and professional websites tailored to your brand — built to make a strong first impression and turn visitors into customers.</p>
+        </div>
+        <div class="card reveal d2">
+          <div class="icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#606060" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          </div>
+          <div class="pillar-num">02 — E-Commerce</div>
+          <h3 style="font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--text-1);margin-bottom:12px;">Online Stores</h3>
+          <p class="body-md">Fully functional online stores, easy to manage and built to sell — with payment integration, product management, and order tracking.</p>
+        </div>
+        <div class="card reveal d3">
+          <div class="icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#606060" stroke-width="1.5"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+          </div>
+          <div class="pillar-num">03 — Landing Pages</div>
+          <h3 style="font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--text-1);margin-bottom:12px;">Landing Pages</h3>
+          <p class="body-md">High-converting pages for product launches, campaigns, and lead generation — focused, fast, and built around a single goal.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Courses Teaser -->
+  <section style="background:var(--bg-2);">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;" class="home-split">
+        <div class="reveal">
+          <div class="eyebrow">Also at Nadha Labs</div>
+          <h2 class="section-hl mb-8">Tech Courses for<br>the Next Generation</h2>
+          <p class="body-md mb-8">We run hands-on training programmes in Python and web development — designed for students and young learners who want practical, job-ready skills.</p>
+          <button class="btn-secondary" onclick="navigate('courses')">View Courses →</button>
+        </div>
+        <div class="reveal d1" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="card" style="padding:24px;">
+            <div class="badge badge-live" style="margin-bottom:12px;">Active</div>
+            <h4 style="font-family:var(--font-display);font-weight:700;font-size:17px;color:var(--text-1);margin-bottom:6px;">Python Programming</h4>
+            <p class="body-md" style="font-size:13px;">Beginner to intermediate. Hands-on, project-based learning.</p>
+          </div>
+          <div class="card" style="padding:24px;">
+            <div class="badge badge-live" style="margin-bottom:12px;">Active</div>
+            <h4 style="font-family:var(--font-display);font-weight:700;font-size:17px;color:var(--text-1);margin-bottom:6px;">Web Development</h4>
+            <p class="body-md" style="font-size:13px;">HTML, CSS, JavaScript. Build real websites from scratch.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- What's Next -->
+  <section>
+    <div class="container text-center">
+      <div class="reveal">
+        <div class="eyebrow">What's Next</div>
+        <h2 class="section-hl mb-8">Building Toward Something Bigger</h2>
+        <p class="body-lg mb-12" style="max-width:560px;margin-left:auto;margin-right:auto;">We are currently a web development studio. In the months ahead, we are also building towards mobile app development and AI-powered tools.</p>
+        <div class="g2" style="max-width:540px;margin:0 auto;text-align:left;">
+          <div class="card" style="padding:24px;">
+            <div class="badge badge-soon" style="margin-bottom:12px;">Coming Soon</div>
+            <h4 style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--text-1);">Mobile App Development</h4>
+          </div>
+          <div class="card" style="padding:24px;">
+            <div class="badge badge-soon" style="margin-bottom:12px;">Coming Soon</div>
+            <h4 style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--text-1);">AI-Powered Tools</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- CTA -->
+  <section style="background:var(--bg-2);">
+    <div class="container text-center reveal">
+      <div class="eyebrow">Let's Work Together</div>
+      <h2 class="section-hl mb-8">Ready to Build Your<br>Digital Presence?</h2>
+      <p class="body-lg mb-12" style="max-width:420px;margin-left:auto;margin-right:auto;">Tell us about your project. We will get back to you within 24 hours.</p>
+      <button class="btn-primary" onclick="navigate('contact')">Get in Touch</button>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+  <div id="footer-home"></div>
+</div>
+
+
+<!-- ============================================================
+     PAGE: SERVICES
+     ============================================================ -->
+<div id="page-services" class="page">
+  <section class="page-hero">
+    <div class="grid-bg"></div>
+    <div class="container page-hero-inner">
+      <div class="eyebrow reveal">Services</div>
+      <h1 class="display-hl reveal d1" style="max-width:620px;margin:0 auto 24px;">Digital Services for Growing Businesses</h1>
+      <p class="body-lg reveal d2" style="max-width:480px;margin:0 auto;">We design and build websites, online stores, and digital products — handling every project with care from start to finish.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- Core Services -->
+  <section>
+    <div class="container">
+      <div class="text-center mb-12 reveal">
+        <div class="eyebrow">What We Build</div>
+        <h2 class="section-hl">Our Core Services</h2>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px;">
+
+        <div class="card reveal">
+          <div class="service-row">
+            <div>
+              <div class="pillar-num">01</div>
+              <h3 style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--text-1);line-height:1.2;">Business Websites</h3>
+            </div>
+            <div>
+              <p class="body-md" style="margin-bottom:20px;">A professional website is the foundation of any business online. We build clean, fast, and mobile-friendly websites that represent your brand the right way.</p>
+              <div class="course-topics">
+                <span class="topic-pill">Responsive Design</span>
+                <span class="topic-pill">SEO-Ready</span>
+                <span class="topic-pill">Fast Loading</span>
+                <span class="topic-pill">CMS Integration</span>
+                <span class="topic-pill">Contact Forms</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal d1">
+          <div class="service-row">
+            <div>
+              <div class="pillar-num">02</div>
+              <h3 style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--text-1);line-height:1.2;">E-Commerce Stores</h3>
+            </div>
+            <div>
+              <p class="body-md" style="margin-bottom:20px;">We build online stores that are easy to manage and built to sell — covering the full flow from product listings to checkout.</p>
+              <div class="course-topics">
+                <span class="topic-pill">Payment Integration</span>
+                <span class="topic-pill">Product Management</span>
+                <span class="topic-pill">Order Tracking</span>
+                <span class="topic-pill">Mobile-First</span>
+                <span class="topic-pill">Secure Checkout</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal d2">
+          <div class="service-row">
+            <div>
+              <div class="pillar-num">03</div>
+              <h3 style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--text-1);line-height:1.2;">Landing Pages</h3>
+            </div>
+            <div>
+              <p class="body-md" style="margin-bottom:20px;">Need a focused page for a campaign, product launch, or lead generation? We design landing pages built around one goal — converting visitors.</p>
+              <div class="course-topics">
+                <span class="topic-pill">Conversion-Focused</span>
+                <span class="topic-pill">Analytics Integrated</span>
+                <span class="topic-pill">Fast Turnaround</span>
+                <span class="topic-pill">A/B Testing Ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal d3">
+          <div class="service-row">
+            <div>
+              <div class="pillar-num">04</div>
+              <h3 style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--text-1);line-height:1.2;">UI/UX Design</h3>
+            </div>
+            <div>
+              <p class="body-md" style="margin-bottom:20px;">Good design is about how something works, not just how it looks. We design interfaces that are intuitive, consistent, and pleasant to use.</p>
+              <div class="course-topics">
+                <span class="topic-pill">Wireframing</span>
+                <span class="topic-pill">Prototyping</span>
+                <span class="topic-pill">Style Guides</span>
+                <span class="topic-pill">User Flows</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Process -->
+  <section style="background:var(--bg-2);">
+    <div class="container">
+      <div class="text-center mb-12 reveal">
+        <div class="eyebrow">How We Work</div>
+        <h2 class="section-hl">A Simple, Clear Process</h2>
+      </div>
+      <div class="process-list reveal">
+        <div class="process-item">
+          <div class="process-num">01</div>
+          <div>
+            <div class="process-title">Discovery</div>
+            <p class="body-md">We start by understanding your business, goals, and audience. No assumptions — just a clear picture of what needs to be built and why.</p>
+          </div>
+        </div>
+        <div class="process-item">
+          <div class="process-num">02</div>
+          <div>
+            <div class="process-title">Design</div>
+            <p class="body-md">We create a design that reflects your brand and communicates clearly to your audience. You review and approve before anything gets built.</p>
+          </div>
+        </div>
+        <div class="process-item">
+          <div class="process-num">03</div>
+          <div>
+            <div class="process-title">Development</div>
+            <p class="body-md">We build your project with clean code, tested across devices and browsers. You receive regular updates throughout.</p>
+          </div>
+        </div>
+        <div class="process-item">
+          <div class="process-num">04</div>
+          <div>
+            <div class="process-title">Launch &amp; Support</div>
+            <p class="body-md">We handle the launch and remain available for questions and fixes after delivery. You are never left on your own.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="container text-center reveal">
+      <h2 class="section-hl mb-8">Have a Project in Mind?</h2>
+      <p class="body-lg mb-12" style="max-width:400px;margin-left:auto;margin-right:auto;">We would love to hear about it. Reach out and let's talk.</p>
+      <button class="btn-primary" onclick="navigate('contact')">Start a Conversation</button>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+  <div id="footer-services"></div>
+</div>
+
+
+<!-- ============================================================
+     PAGE: COURSES
+     ============================================================ -->
+<div id="page-courses" class="page">
+  <section class="page-hero">
+    <div class="grid-bg"></div>
+    <div class="container page-hero-inner">
+      <div class="eyebrow reveal">Courses</div>
+      <h1 class="display-hl reveal d1" style="max-width:620px;margin:0 auto 24px;">Practical Tech Skills<br>for Real Learners</h1>
+      <p class="body-lg reveal d2" style="max-width:480px;margin:0 auto;">Hands-on, project-based courses in programming and web development. No theory overload — just skills you can actually use.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- Active Courses -->
+  <section>
+    <div class="container">
+      <div class="text-center mb-12 reveal">
+        <div class="eyebrow">Currently Running</div>
+        <h2 class="section-hl">Active Courses</h2>
+      </div>
+      <div class="g2">
+        <div class="course-card reveal d1">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+            <h3 style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--text-1);">Python Programming</h3>
+            <div class="badge badge-live">Active</div>
+          </div>
+          <div class="course-duration">4 Weeks · Beginner to Intermediate</div>
+          <p class="body-md">Learn Python from scratch through real exercises and projects. Covers variables, functions, loops, file handling, and an introduction to data concepts.</p>
+          <div class="course-topics">
+            <span class="topic-pill">Python Basics</span>
+            <span class="topic-pill">Functions &amp; Loops</span>
+            <span class="topic-pill">File Handling</span>
+            <span class="topic-pill">Mini Projects</span>
+          </div>
+          <button class="btn-primary" style="margin-top:8px;align-self:flex-start;" onclick="navigate('contact')">Register Now</button>
+        </div>
+        <div class="course-card reveal d2">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+            <h3 style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--text-1);">Web Development</h3>
+            <div class="badge badge-live">Active</div>
+          </div>
+          <div class="course-duration">4 Weeks · Beginner Friendly</div>
+          <p class="body-md">Build real websites from the ground up. Covers HTML, CSS, and JavaScript — everything you need to design and publish your first website.</p>
+          <div class="course-topics">
+            <span class="topic-pill">HTML &amp; CSS</span>
+            <span class="topic-pill">JavaScript</span>
+            <span class="topic-pill">Responsive Design</span>
+            <span class="topic-pill">Live Project</span>
+          </div>
+          <button class="btn-primary" style="margin-top:8px;align-self:flex-start;" onclick="navigate('contact')">Register Now</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Coming Soon -->
+  <section style="background:var(--bg-2);">
+    <div class="container">
+      <div class="text-center mb-12 reveal">
+        <div class="eyebrow">Coming Soon</div>
+        <h2 class="section-hl">More Courses on the Way</h2>
+      </div>
+      <div class="g3">
+        <div class="card reveal d1" style="padding:28px;">
+          <div class="badge badge-soon" style="margin-bottom:16px;">Coming Soon</div>
+          <h4 style="font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--text-1);margin-bottom:8px;">Data Analytics</h4>
+          <p class="body-md" style="font-size:14px;">Working with data, spreadsheets, and basic visualisation tools.</p>
+        </div>
+        <div class="card reveal d2" style="padding:28px;">
+          <div class="badge badge-soon" style="margin-bottom:16px;">Coming Soon</div>
+          <h4 style="font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--text-1);margin-bottom:8px;">Cybersecurity Basics</h4>
+          <p class="body-md" style="font-size:14px;">Understanding online safety, threats, and fundamental security practices.</p>
+        </div>
+        <div class="card reveal d3" style="padding:28px;">
+          <div class="badge badge-soon" style="margin-bottom:16px;">Coming Soon</div>
+          <h4 style="font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--text-1);margin-bottom:8px;">AI Fundamentals</h4>
+          <p class="body-md" style="font-size:14px;">What AI actually is, how it works, and how to use it practically.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="container text-center reveal">
+      <h2 class="section-hl mb-8">Interested in a Course?</h2>
+      <p class="body-lg mb-12" style="max-width:400px;margin-left:auto;margin-right:auto;">Reach out and we will share schedule, batch details, and fees.</p>
+      <button class="btn-primary" onclick="navigate('contact')">Enquire Now</button>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+  <div id="footer-courses"></div>
+</div>
+
+
+<!-- ============================================================
+     PAGE: ABOUT
+     ============================================================ -->
+<div id="page-about" class="page">
+  <section class="page-hero">
+    <div class="grid-bg"></div>
+    <div class="container page-hero-inner">
+      <div class="eyebrow reveal">About</div>
+      <h1 class="display-hl reveal d1" style="max-width:580px;margin:0 auto 24px;">A Studio Built on Craft<br>and Honest Work</h1>
+      <p class="body-lg reveal d2" style="max-width:460px;margin:0 auto;">Nadha Labs is a digital studio based in Kottiyam, Kollam, Kerala — building websites and running tech courses for students and businesses.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <section style="background:var(--bg-2);">
+    <div class="container-narrow">
+      <div class="eyebrow reveal">Who We Are</div>
+      <h2 class="section-hl reveal d1 mb-8">Started Small.<br>Building With Intention.</h2>
+      <p class="body-lg reveal d2 mb-8">Nadha Labs was started with a straightforward belief — good digital work should be accessible to businesses of every size, not just large companies with large budgets.</p>
+      <p class="body-md reveal d3 mb-8">We are at an early stage, building our track record and working with businesses that want a serious digital partner. Our focus right now is web development and digital services, funded by the client work we do.</p>
+      <p class="body-md reveal d4">In parallel, we run tech training courses for students — Python, web development, and more — because we believe practical skills education matters just as much as building products.</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="container">
+      <div class="text-center mb-12 reveal">
+        <div class="eyebrow">The Road Ahead</div>
+        <h2 class="section-hl">Where We Are Headed</h2>
+      </div>
+      <div class="process-list reveal">
+        <div class="process-item">
+          <div class="process-num" style="color:var(--text-1);font-weight:600;">Now</div>
+          <div>
+            <div class="process-title">Web Development &amp; Digital Services</div>
+            <p class="body-md">Taking on client projects — websites, e-commerce, landing pages, and UI/UX. Building our track record and funding what comes next.</p>
+          </div>
+        </div>
+        <div class="process-item">
+          <div class="process-num">Next</div>
+          <div>
+            <div class="process-title">Mobile App Development</div>
+            <p class="body-md">Expanding into app development in the months ahead — starting with projects for existing and new clients.</p>
+          </div>
+        </div>
+        <div class="process-item">
+          <div class="process-num">Later</div>
+          <div>
+            <div class="process-title">AI-Powered Tools</div>
+            <p class="body-md">Building AI tools and integrations for businesses — a natural extension of the software work we are doing now.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section style="background:var(--bg-2);">
+    <div class="container text-center reveal">
+      <h2 class="section-hl mb-8">Work With Us</h2>
+      <p class="body-lg mb-12" style="max-width:420px;margin-left:auto;margin-right:auto;">We are looking for clients who want thoughtful, quality digital work. If that sounds like you, get in touch.</p>
+      <button class="btn-primary" onclick="navigate('contact')">Contact Us</button>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+  <div id="footer-about"></div>
+</div>
+
+
+<!-- ============================================================
+     PAGE: CONTACT
+     ============================================================ -->
+<div id="page-contact" class="page">
+  <section class="page-hero" style="padding-bottom:40px;">
+    <div class="grid-bg"></div>
+    <div class="container page-hero-inner">
+      <div class="eyebrow reveal">Contact</div>
+      <h1 class="display-hl reveal d1" style="max-width:500px;margin:0 auto 24px;">Let's Talk</h1>
+      <p class="body-lg reveal d2" style="max-width:420px;margin:0 auto;">Whether it's a web project or a course enquiry, we respond to every message personally.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <section>
+    <div class="container">
+      <div class="g2" style="gap:60px;align-items:start;">
+
+        <!-- Form -->
+        <div class="reveal">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('project', this)">Project Enquiry</button>
+            <button class="tab-btn" onclick="switchTab('course', this)">Course Registration</button>
+          </div>
+
+          <!-- Project Enquiry -->
+          <div id="tab-project" class="tab-pane active">
+            <div class="form-field">
+              <label>Name *</label>
+              <input type="text" class="form-input" id="proj-name" placeholder="Your full name">
+            </div>
+            <div class="form-field">
+              <label>Email *</label>
+              <input type="email" class="form-input" id="proj-email" placeholder="your@email.com">
+            </div>
+            <div class="form-field">
+              <label>Phone</label>
+              <input type="tel" class="form-input" id="proj-phone" placeholder="+91 XXXXX XXXXX">
+            </div>
+            <div class="form-field">
+              <label>Service *</label>
+              <select class="form-select" id="proj-service">
+                <option value="">Select a service</option>
+                <option>Business Website</option>
+                <option>E-Commerce Store</option>
+                <option>Landing Page</option>
+                <option>UI/UX Design</option>
+                <option>Not sure yet</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Tell Us About Your Project *</label>
+              <textarea class="form-textarea" id="proj-message" placeholder="Describe what you need. The more detail, the better."></textarea>
+            </div>
+            <button class="btn-primary" id="proj-btn" onclick="submitProject()">Send Enquiry</button>
+            <div id="proj-success" class="form-success">Thanks! We will get back to you within 24 hours.</div>
+            <div id="proj-error" class="form-error"></div>
+          </div>
+
+          <!-- Course Registration -->
+          <div id="tab-course" class="tab-pane">
+            <div class="form-field">
+              <label>Name *</label>
+              <input type="text" class="form-input" id="crs-name" placeholder="Your full name">
+            </div>
+            <div class="form-field">
+              <label>Email *</label>
+              <input type="email" class="form-input" id="crs-email" placeholder="your@email.com">
+            </div>
+            <div class="form-field">
+              <label>Phone</label>
+              <input type="tel" class="form-input" id="crs-phone" placeholder="+91 XXXXX XXXXX">
+            </div>
+            <div class="form-field">
+              <label>Course *</label>
+              <select class="form-select" id="crs-course">
+                <option value="">Select a course</option>
+                <option>Python Programming</option>
+                <option>Web Development</option>
+                <option>Notify me about upcoming courses</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Message (Optional)</label>
+              <textarea class="form-textarea" id="crs-message" placeholder="Any questions about the course, schedule, or fees?" style="min-height:100px;"></textarea>
+            </div>
+            <button class="btn-primary" id="crs-btn" onclick="submitCourse()">Register Interest</button>
+            <div id="crs-success" class="form-success">Registered! We will send you the course details shortly.</div>
+            <div id="crs-error" class="form-error"></div>
+          </div>
+        </div>
+
+        <!-- Direct Contact Info -->
+        <div class="reveal d1">
+          <div class="eyebrow mb-8">Direct Contact</div>
+          <div class="contact-info">
+            <div class="contact-row">
+              <div class="contact-label">Phone</div>
+              <a href="tel:+919074496153" class="contact-value">+91 90744 96153</a>
+            </div>
+            <div class="contact-row">
+              <div class="contact-label">Email</div>
+              <a href="/cdn-cgi/l/email-protection#90fef1f4f8f1fcf1f2e3d0f7fdf1f9fcbef3fffd" class="contact-value"><span class="__cf_email__" data-cfemail="e78986838f868b868594a7808a868e8bc984888a">[email&#160;protected]</span></a>
+            </div>
+            <div class="contact-row">
+              <div class="contact-label">Alt Email</div>
+              <a href="/cdn-cgi/l/email-protection#432d22272b2224312c36333003242e222a2f6d202c2e" class="contact-value"><span class="__cf_email__" data-cfemail="8be5eaefe3eaecf9e4fefbf8cbece6eae2e7a5e8e4e6">[email&#160;protected]</span></a>
+            </div>
+            <div class="contact-row">
+              <div class="contact-label">Location</div>
+              <div class="contact-value">Kottiyam, Kollam, Kerala</div>
+            </div>
+          </div>
+          <div style="margin-top:28px;padding:22px 24px;border:1px solid var(--border);border-radius:4px;">
+            <p style="font-size:13px;color:var(--text-3);line-height:1.8;">We respond to every enquiry personally. Typical response time is within 24 hours on working days.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+  <div id="footer-contact"></div>
+</div>
+
+
+<!-- ============================================================
+     PAGE: LEGAL
+     ============================================================ -->
+<div id="page-legal" class="page">
+  <section style="padding:160px 0 80px;">
+    <div class="container-narrow">
+      <div class="eyebrow reveal" style="margin-bottom:16px;">Legal</div>
+      <h1 class="display-hl reveal d1" style="margin-bottom:48px;">Privacy &amp; Terms</h1>
+      <div class="reveal d2" style="display:flex;flex-direction:column;gap:36px;">
+        <div>
+          <h2 style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text-1);margin-bottom:14px;">Privacy Policy</h2>
+          <p class="body-md" style="margin-bottom:14px;">Nadha Labs collects only the information you provide through our contact and registration forms — your name, email address, phone number, and message. We use this information solely to respond to your enquiry and to send relevant updates with your consent.</p>
+          <p class="body-md">We do not sell, share, or misuse your personal data. We may use cookies to improve site functionality. You can disable cookies through your browser settings at any time.</p>
+        </div>
+        <div class="divider-grad"></div>
+        <div>
+          <h2 style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text-1);margin-bottom:14px;">Terms of Service</h2>
+          <p class="body-md" style="margin-bottom:14px;">By using this website, you agree to use it only for lawful purposes. The content on this site is the property of Nadha Labs and may not be reproduced without written permission.</p>
+          <p class="body-md">Nadha Labs is not liable for any indirect or consequential damages arising from use of this website or our services. These terms are governed by applicable Indian law.</p>
+        </div>
+        <div class="divider-grad"></div>
+        <div>
+          <h2 style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text-1);margin-bottom:14px;">Questions?</h2>
+          <p class="body-md">For any legal or privacy questions, email us at <a href="/cdn-cgi/l/email-protection#83ede2e7ebe2efe2e1f0c3e4eee2eaefade0ecee" style="color:var(--text-1);text-decoration:underline;"><span class="__cf_email__" data-cfemail="fc929d98949d909d9e8fbc9b919d9590d29f9391">[email&#160;protected]</span></a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="divider"></div>
+  <div id="footer-legal"></div>
+</div>
+
+
+<!-- COOKIE BANNER -->
+<div id="cookie-banner">
+  <p class="cookie-text">We use cookies to improve your experience. Your data is never sold.</p>
+  <div class="cookie-btns">
+    <button class="c-btn c-accept" onclick="closeCookie()">Accept</button>
+  </div>
+</div>
+
+
+<!-- FOOTER TEMPLATE -->
+<template id="ftpl">
+<footer>
+  <div class="container" style="position:relative;z-index:1;">
+    <div class="footer-grid">
+      <div>
+        <div class="logo-full" style="margin-bottom:16px;">
+          <img src="logo.png" alt="Nadha Labs" class="logo-img" style="height:34px;width:34px;" onerror="this.style.display='none'">
+          <span class="logo-wordmark" style="font-size:16px;">NADHA <span>LABS</span></span>
+        </div>
+        <p class="footer-tagline">Web development &amp; digital services.<br>Based in Kottiyam, Kollam, Kerala.</p>
+        <p class="footer-tagline" style="margin-top:16px;font-family:var(--font-mono);font-size:11px;color:var(--text-3);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7c121d18141d101d1e0f3c1b111d1510521f1311">[email&#160;protected]</a><br>+91 90744 96153</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Navigate</div>
+        <div class="footer-links">
+          <button class="footer-link" onclick="navigate('home')">Home</button>
+          <button class="footer-link" onclick="navigate('services')">Services</button>
+          <button class="footer-link" onclick="navigate('courses')">Courses</button>
+          <button class="footer-link" onclick="navigate('about')">About</button>
+          <button class="footer-link" onclick="navigate('contact')">Contact</button>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Contact</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="tel:+919074496153" class="footer-link">+91 90744 96153</a>
+          <a href="/cdn-cgi/l/email-protection#7e101f1a161f121f1c0d3e19131f1712501d1113" class="footer-link"><span class="__cf_email__" data-cfemail="cfa1aeaba7aea3aeadbc8fa8a2aea6a3e1aca0a2">[email&#160;protected]</span></a>
+          <a href="/cdn-cgi/l/email-protection#2a444b4e424b4d58455f5a596a4d474b434604494547" class="footer-link"><span class="__cf_email__" data-cfemail="bad4dbded2dbddc8d5cfcac9faddd7dbd3d694d9d5d7">[email&#160;protected]</span></a>
+          <span style="font-size:13px;color:var(--text-3);margin-top:4px;">Kottiyam, Kollam, Kerala</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Nadha Labs. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="#" onclick="navigate('legal')">Privacy &amp; Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+</template>
+
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ============================================================
+// EMAILJS SETUP
+// Step 1 — Go to https://www.emailjs.com and create a free account.
+// Step 2 — Under "Email Services", connect your Gmail. Copy the Service ID.
+// Step 3 — Under "Email Templates", create a template. Use these variables:
+//           {{inquiry_type}}, {{from_name}}, {{from_email}},
+//           {{phone}}, {{service_or_course}}, {{message}}
+// Step 4 — Copy your Public Key from Account → General.
+// Step 5 — Replace the three values below and you are done.
+// ============================================================
+var EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';    // ← paste your public key from Account → General
+var EMAILJS_SERVICE_ID  = 'service_x180qio';
+var EMAILJS_TEMPLATE_ID = 'template_36xv739';
+
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+// ============================================================
+// INTRO
+// ============================================================
+var introEl = document.getElementById('intro');
+function dismissIntro() {
+  if (!introEl) return;
+  introEl.classList.add('fade-out');
+  setTimeout(function() { introEl.classList.add('gone'); }, 750);
+}
+window.addEventListener('load', function() { setTimeout(dismissIntro, 1500); });
+
+// ============================================================
+// CURSOR
+// ============================================================
+var dot  = document.getElementById('cursor-dot');
+var ring = document.getElementById('cursor-ring');
+var mx = 0, my = 0;
+document.addEventListener('mousemove', function(e) {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+});
+(function animRing() {
+  ring.style.left = mx + 'px'; ring.style.top = my + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+// ============================================================
+// NAVBAR SCROLL
+// ============================================================
+window.addEventListener('scroll', function() {
+  var nav = document.getElementById('navbar');
+  if (window.scrollY > 40) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+});
+
+// ============================================================
+// MOBILE NAV
+// ============================================================
+function toggleMobile() { document.getElementById('mobile-overlay').classList.toggle('open'); }
+function go(id) { toggleMobile(); navigate(id); }
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+var PAGES = ['home', 'services', 'courses', 'about', 'contact', 'legal'];
+
+function navigate(id) {
+  PAGES.forEach(function(p) {
+    var el = document.getElementById('page-' + p);
+    if (el) el.classList.remove('active');
+  });
+  var target = document.getElementById('page-' + id);
+  if (target) {
+    target.classList.add('active');
+    window.scrollTo(0, 0);
+    injectFooter(id);
+    setTimeout(observeReveals, 80);
+    updateNavActive(id);
+  }
+}
+
+function updateNavActive(id) {
+  document.querySelectorAll('.nav-link').forEach(function(l) { l.classList.remove('active'); });
+  var map    = { home: 0, services: 1, courses: 2, about: 3 };
+  var links  = document.querySelectorAll('.nav-link');
+  if (map[id] !== undefined && links[map[id]]) links[map[id]].classList.add('active');
+}
+
+// ============================================================
+// FOOTER INJECT
+// ============================================================
+function injectFooter(id) {
+  var el = document.getElementById('footer-' + id);
+  if (el && el.innerHTML.trim() === '') {
+    el.innerHTML = document.getElementById('ftpl').innerHTML;
+  }
+}
+
+// ============================================================
+// SCROLL REVEALS
+// ============================================================
+function observeReveals() {
+  var items = document.querySelectorAll('.reveal:not(.visible)');
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  items.forEach(function(r) { obs.observe(r); });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', function() {
+  injectFooter('home');
+  observeReveals();
+  if (!localStorage.getItem('nl-cookie')) {
+    setTimeout(function() { document.getElementById('cookie-banner').classList.add('show'); }, 2800);
+  }
+});
+window.addEventListener('scroll', observeReveals);
+
+// ============================================================
+// COOKIE
+// ============================================================
+function closeCookie() {
+  localStorage.setItem('nl-cookie', '1');
+  document.getElementById('cookie-banner').classList.remove('show');
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+// ============================================================
+// FORM: PROJECT ENQUIRY
+// ============================================================
+function submitProject() {
+  var name    = document.getElementById('proj-name').value.trim();
+  var email   = document.getElementById('proj-email').value.trim();
+  var phone   = document.getElementById('proj-phone').value.trim();
+  var service = document.getElementById('proj-service').value;
+  var message = document.getElementById('proj-message').value.trim();
+  var btn     = document.getElementById('proj-btn');
+  var success = document.getElementById('proj-success');
+  var error   = document.getElementById('proj-error');
+
+  success.classList.remove('show');
+  error.classList.remove('show');
+
+  if (!name || !email || !service || !message) {
+    error.textContent = 'Please fill in all required fields.';
+    error.classList.add('show');
+    return;
+  }
+  if (!isValidEmail(email)) {
+    error.textContent = 'Please enter a valid email address.';
+    error.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    inquiry_type:     'Project Enquiry',
+    from_name:        name,
+    from_email:       email,
+    phone:            phone || 'Not provided',
+    service_or_course: service,
+    message:          message
+  }).then(function() {
+    success.classList.add('show');
+    btn.textContent = 'Sent ✓';
+    ['proj-name', 'proj-email', 'proj-phone', 'proj-message'].forEach(function(id) {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('proj-service').value = '';
+  }, function() {
+    error.textContent = 'Something went wrong. Please email us directly at nadhalabs@gmail.com';
+    error.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Send Enquiry';
+  });
+}
+
+// ============================================================
+// FORM: COURSE REGISTRATION
+// ============================================================
+function submitCourse() {
+  var name    = document.getElementById('crs-name').value.trim();
+  var email   = document.getElementById('crs-email').value.trim();
+  var phone   = document.getElementById('crs-phone').value.trim();
+  var course  = document.getElementById('crs-course').value;
+  var message = document.getElementById('crs-message').value.trim();
+  var btn     = document.getElementById('crs-btn');
+  var success = document.getElementById('crs-success');
+  var error   = document.getElementById('crs-error');
+
+  success.classList.remove('show');
+  error.classList.remove('show');
+
+  if (!name || !email || !course) {
+    error.textContent = 'Please fill in all required fields.';
+    error.classList.add('show');
+    return;
+  }
+  if (!isValidEmail(email)) {
+    error.textContent = 'Please enter a valid email address.';
+    error.classList.ad
