@@ -3,1277 +3,1526 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nadha Labs — Web Development & Digital Services</title>
-<meta name="description" content="Nadha Labs builds professional websites, e-commerce stores, and digital products for businesses. Based in Kottiyam, Kerala.">
-<meta property="og:title" content="Nadha Labs — Web Development & Digital Services">
-<meta property="og:description" content="Professional websites, e-commerce, and digital services for growing businesses.">
-<meta property="og:type" content="website">
+<title>Nadha Labs — Intelligence. Craft. Systems.</title>
+<meta name="description" content="Nadha Labs builds websites, AI tools, and digital products for businesses ready to grow. Based in Kerala, India.">
+
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Outfit:wght@200;300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- Three.js + GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 <style>
-
-/* ============================================================
-   DESIGN TOKENS
-   ============================================================ */
+/* ═══════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════ */
 :root {
-  --black:        #000000;
-  --bg-2:         #0A0A0A;
-  --bg-3:         #111111;
-  --surface:      #1A1A1A;
-  --border:       #2A2A2A;
-  --border-bright:#5A5A5A;
-  --text-1:       #F5F5F5;
-  --text-2:       #A0A0A0;
-  --text-3:       #606060;
-  --accent:       #D0D0D0;
-  --white:        #FFFFFF;
-  --grad:         linear-gradient(135deg, #3A3A3A, #909090, #C8C8C8);
-  --ease:         cubic-bezier(0.4, 0, 0.2, 1);
-  --font-display: 'Syne', Georgia, serif;
-  --font-body:    'DM Sans', system-ui, sans-serif;
-  --font-mono:    'JetBrains Mono', monospace;
+  --ink:        #050507;
+  --ink-2:      #0c0c10;
+  --ink-3:      #141418;
+  --surface:    #1c1c22;
+  --border:     rgba(255,255,255,0.07);
+  --border-hi:  rgba(255,255,255,0.18);
+  --silver-1:   #f0f0f0;
+  --silver-2:   #b8b8c0;
+  --silver-3:   #707078;
+  --silver-4:   #3a3a42;
+  --chrome:     linear-gradient(135deg,#888 0%,#ddd 35%,#fff 50%,#ccc 65%,#777 100%);
+  --chrome-2:   linear-gradient(135deg,#555 0%,#aaa 40%,#e8e8e8 55%,#999 70%,#444 100%);
+  --glow:       0 0 60px rgba(200,200,220,0.12);
+  --ease-out:   cubic-bezier(0.16,1,0.3,1);
+  --ease-in:    cubic-bezier(0.7,0,0.84,0);
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans:  'Outfit', system-ui, sans-serif;
+  --font-mono:  'Space Mono', monospace;
 }
 
-/* ============================================================
-   RESET & BASE
-   ============================================================ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--black);
-  color: var(--text-1);
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.7;
-  overflow-x: hidden;
-  cursor: none;
+/* ═══════════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{
+  background:var(--ink);
+  color:var(--silver-1);
+  font-family:var(--font-sans);
+  font-weight:300;
+  line-height:1.7;
+  overflow-x:hidden;
+  cursor:none;
 }
-a { color: inherit; text-decoration: none; }
-img { max-width: 100%; display: block; }
-button { cursor: none; font-family: var(--font-body); }
-input, textarea, select { font-family: var(--font-body); }
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+button{font-family:var(--font-sans);cursor:none;border:none;background:none;}
+input,textarea,select{font-family:var(--font-sans);}
 
-@media (hover: none) {
-  #cursor-dot, #cursor-ring { display: none !important; }
-  body   { cursor: auto !important; }
-  button { cursor: auto !important; }
-}
-
-/* ============================================================
-   CUSTOM CURSOR — desktop only
-   ============================================================ */
-#cursor-dot {
-  position: fixed; width: 8px; height: 8px;
-  background: var(--white); border-radius: 50%;
-  pointer-events: none; z-index: 99999;
-  transform: translate(-50%, -50%);
-  transition: transform 0.1s var(--ease);
-}
-#cursor-ring {
-  position: fixed; width: 28px; height: 28px;
-  border: 1px solid rgba(255,255,255,0.4); border-radius: 50%;
-  pointer-events: none; z-index: 99998;
-  transform: translate(-50%, -50%);
-  transition: left 0.12s var(--ease), top 0.12s var(--ease);
+@media(hover:none){
+  #c-dot,#c-ring{display:none!important;}
+  body,button{cursor:auto!important;}
 }
 
-/* ============================================================
-   INTRO SCREEN
-   ============================================================ */
-#intro {
-  position: fixed; inset: 0; background: var(--black);
-  z-index: 9999; display: flex; align-items: center; justify-content: center;
-  transition: opacity 0.7s var(--ease);
+/* ═══════════════════════════════════════════════
+   CURSOR
+═══════════════════════════════════════════════ */
+#c-dot{
+  position:fixed;width:6px;height:6px;
+  background:#fff;border-radius:50%;
+  pointer-events:none;z-index:99999;
+  transform:translate(-50%,-50%);
+  mix-blend-mode:difference;
+  transition:transform .15s var(--ease-out),width .3s,height .3s;
 }
-#intro.fade-out { opacity: 0; }
-#intro.gone     { display: none; }
-.intro-logo {
-  display: flex; flex-direction: column; align-items: center; gap: 16px;
-  opacity: 0; animation: introFade 0.8s var(--ease) 0.1s forwards;
+#c-ring{
+  position:fixed;width:36px;height:36px;
+  border:1px solid rgba(255,255,255,0.3);border-radius:50%;
+  pointer-events:none;z-index:99998;
+  transform:translate(-50%,-50%);
+  transition:left .1s var(--ease-out),top .1s var(--ease-out),
+             width .3s var(--ease-out),height .3s var(--ease-out),
+             border-color .3s;
 }
-@keyframes introFade {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
-}
-.intro-wordmark {
-  font-family: var(--font-display);
-  font-size: 28px; font-weight: 700;
-  letter-spacing: 0.4em; text-transform: uppercase;
-  background: var(--grad); -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent; background-clip: text;
-  position: relative; overflow: hidden;
-}
-.intro-wordmark::after {
-  content: '';
-  position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  animation: shimmer 1.5s var(--ease) 0.6s forwards;
-}
-@keyframes shimmer { 0% { left: -100%; } 100% { left: 200%; } }
-.intro-sub {
-  font-family: var(--font-mono);
-  font-size: 10px; letter-spacing: 0.4em;
-  color: var(--text-3); text-transform: uppercase;
+body:has(button:hover) #c-ring,
+body:has(a:hover) #c-ring{
+  width:56px;height:56px;border-color:rgba(255,255,255,0.6);
 }
 
-/* ============================================================
-   LOGO
-   ============================================================ */
-.logo-full     { display: flex; align-items: center; gap: 12px; cursor: none; }
-.logo-img      { object-fit: contain; flex-shrink: 0; }
-.logo-wordmark {
-  font-family: var(--font-display);
-  font-size: 18px; font-weight: 700;
-  letter-spacing: 0.3em; text-transform: uppercase;
-  background: var(--grad); -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent; background-clip: text;
+/* ═══════════════════════════════════════════════
+   INTRO LOADER
+═══════════════════════════════════════════════ */
+#intro{
+  position:fixed;inset:0;
+  background:var(--ink);
+  z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:24px;
+  transition:opacity .9s var(--ease-in),transform .9s var(--ease-in);
 }
-.logo-wordmark span { font-weight: 300; opacity: 0.45; }
+#intro.out{opacity:0;transform:scale(1.04);pointer-events:none;}
+#intro.gone{display:none;}
+.intro-brand{
+  font-family:var(--font-serif);
+  font-size:clamp(28px,5vw,52px);
+  font-weight:300;
+  letter-spacing:.5em;
+  text-transform:uppercase;
+  background:var(--chrome);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  background-size:200% 100%;
+  animation:sheen 2s ease forwards;
+}
+@keyframes sheen{
+  0%{background-position:200% 0;}
+  100%{background-position:0% 0;}
+}
+.intro-bar{
+  width:120px;height:1px;
+  background:var(--silver-4);
+  position:relative;overflow:hidden;
+}
+.intro-bar::after{
+  content:'';position:absolute;top:0;left:-100%;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,#fff,transparent);
+  animation:scan 1.4s ease forwards .3s;
+}
+@keyframes scan{0%{left:-100%;}100%{left:200%;}}
+.intro-sub{
+  font-family:var(--font-mono);
+  font-size:10px;letter-spacing:.35em;
+  color:var(--silver-3);text-transform:uppercase;
+  opacity:0;animation:fadeup .6s ease forwards .8s;
+}
+@keyframes fadeup{
+  from{opacity:0;transform:translateY(8px);}
+  to{opacity:1;transform:translateY(0);}
+}
 
-/* ============================================================
+/* ═══════════════════════════════════════════════
+   CANVAS (Three.js)
+═══════════════════════════════════════════════ */
+#scene-canvas{
+  position:fixed;inset:0;
+  z-index:0;pointer-events:none;
+  opacity:.75;
+}
+.hero-interactive{
+  position:absolute;inset:0;
+  z-index:1;
+}
+
+/* ═══════════════════════════════════════════════
    NAVBAR
-   ============================================================ */
-#navbar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-  padding: 0 40px; height: 72px;
-  display: flex; align-items: center; justify-content: space-between;
-  transition: background 0.4s var(--ease), border-bottom 0.4s var(--ease);
+═══════════════════════════════════════════════ */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  padding:0 48px;height:76px;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:background .5s,backdrop-filter .5s,border-bottom .5s;
 }
-#navbar.scrolled {
-  background: rgba(0,0,0,0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
+#nav.solid{
+  background:rgba(5,5,7,0.85);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
 }
-.nav-links { display: flex; align-items: center; gap: 32px; }
-.nav-link {
-  font-size: 13px; color: var(--text-2); letter-spacing: 0.05em;
-  position: relative; transition: color 0.3s var(--ease);
-  background: none; border: none; padding: 0;
+.nav-logo{
+  display:flex;align-items:center;gap:12px;
 }
-.nav-link::after {
-  content: ''; position: absolute; bottom: -2px; left: 0;
-  width: 0; height: 1px; background: var(--accent);
-  transition: width 0.3s var(--ease);
+.nav-logo img{height:36px;width:36px;object-fit:contain;}
+.nav-wordmark{
+  font-family:var(--font-serif);
+  font-size:20px;font-weight:600;
+  letter-spacing:.28em;text-transform:uppercase;
+  background:var(--chrome);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.nav-link:hover, .nav-link.active { color: var(--text-1); }
-.nav-link:hover::after, .nav-link.active::after { width: 100%; }
-.btn-nav-cta {
-  padding: 10px 22px; background: transparent;
-  border: 1px solid transparent;
-  background-image: linear-gradient(var(--black), var(--black)),
-    linear-gradient(135deg, #3A3A3A, #909090, #C8C8C8);
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  color: var(--text-1); font-size: 13px; font-weight: 500;
-  letter-spacing: 0.08em; border-radius: 3px;
-  transition: all 0.3s var(--ease);
+.nav-links{display:flex;align-items:center;gap:36px;}
+.nav-lnk{
+  font-size:12px;font-weight:400;
+  letter-spacing:.12em;color:var(--silver-3);
+  text-transform:uppercase;
+  background:none;border:none;padding:0;
+  transition:color .3s;position:relative;
 }
-.btn-nav-cta:hover {
-  background-image: linear-gradient(#1A1A1A, #1A1A1A),
-    linear-gradient(135deg, #606060, #C8C8C8, #FFFFFF);
-  color: var(--white);
+.nav-lnk::after{
+  content:'';position:absolute;bottom:-3px;left:0;
+  width:0;height:1px;background:var(--silver-2);
+  transition:width .3s var(--ease-out);
 }
-.hamburger {
-  display: none; flex-direction: column; gap: 5px;
-  background: none; border: none; padding: 4px;
+.nav-lnk:hover,.nav-lnk.on{color:var(--silver-1);}
+.nav-lnk:hover::after,.nav-lnk.on::after{width:100%;}
+.nav-cta{
+  padding:10px 24px;
+  border:1px solid var(--border-hi);
+  border-radius:2px;
+  font-size:11px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--silver-1);
+  background:rgba(255,255,255,0.04);
+  transition:all .3s var(--ease-out);
 }
-.hamburger span { width: 22px; height: 1px; background: var(--text-1); display: block; transition: all 0.3s var(--ease); }
+.nav-cta:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.35);}
+.hamburger{display:none;flex-direction:column;gap:6px;padding:4px;}
+.hamburger span{width:24px;height:1px;background:var(--silver-1);display:block;transition:all .3s;}
 
-/* ============================================================
+/* ═══════════════════════════════════════════════
    MOBILE OVERLAY
-   ============================================================ */
-#mobile-overlay {
-  display: none; position: fixed; inset: 0;
-  background: var(--black); z-index: 999;
-  flex-direction: column; align-items: center; justify-content: center; gap: 28px;
+═══════════════════════════════════════════════ */
+#mob{
+  display:none;position:fixed;inset:0;
+  background:rgba(5,5,7,0.97);
+  z-index:990;
+  flex-direction:column;align-items:center;justify-content:center;gap:32px;
 }
-#mobile-overlay.open { display: flex; }
-.mobile-link {
-  font-family: var(--font-display); font-size: 26px; font-weight: 700;
-  color: var(--text-2); letter-spacing: 0.05em;
-  opacity: 0; transform: translateY(20px);
-  transition: color 0.3s var(--ease), opacity 0.35s var(--ease), transform 0.35s var(--ease);
-  background: none; border: none;
+#mob.open{display:flex;}
+.mob-lnk{
+  font-family:var(--font-serif);
+  font-size:clamp(28px,6vw,44px);font-weight:300;
+  letter-spacing:.08em;color:var(--silver-3);
+  opacity:0;transform:translateY(24px);
+  transition:color .3s,opacity .4s var(--ease-out),transform .4s var(--ease-out);
+  background:none;border:none;
 }
-#mobile-overlay.open .mobile-link                   { opacity: 1; transform: translateY(0); }
-#mobile-overlay.open .mobile-link:nth-child(2)      { transition-delay: 0.05s; }
-#mobile-overlay.open .mobile-link:nth-child(3)      { transition-delay: 0.10s; }
-#mobile-overlay.open .mobile-link:nth-child(4)      { transition-delay: 0.15s; }
-#mobile-overlay.open .mobile-link:nth-child(5)      { transition-delay: 0.20s; }
-#mobile-overlay.open .mobile-link:nth-child(6)      { transition-delay: 0.25s; }
-.mobile-link:hover { color: var(--white); }
-.close-btn {
-  position: absolute; top: 24px; right: 32px;
-  font-size: 24px; color: var(--text-2); background: none; border: none; line-height: 1;
-}
+#mob.open .mob-lnk{opacity:1;transform:translateY(0);}
+#mob.open .mob-lnk:nth-child(2){transition-delay:.05s;}
+#mob.open .mob-lnk:nth-child(3){transition-delay:.10s;}
+#mob.open .mob-lnk:nth-child(4){transition-delay:.15s;}
+#mob.open .mob-lnk:nth-child(5){transition-delay:.20s;}
+#mob.open .mob-lnk:nth-child(6){transition-delay:.25s;}
+.mob-lnk:hover{color:var(--silver-1);}
+.mob-close{position:absolute;top:28px;right:36px;font-size:22px;color:var(--silver-3);background:none;border:none;}
 
-/* ============================================================
+/* ═══════════════════════════════════════════════
    PAGE SYSTEM
-   ============================================================ */
-.page        { display: none; min-height: 100vh; }
-.page.active { display: block; }
+═══════════════════════════════════════════════ */
+.page{display:none;min-height:100vh;}
+.page.active{display:block;}
 
-/* ============================================================
-   GRID BACKGROUND
-   ============================================================ */
-.grid-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
-.grid-bg::before {
-  content: ''; position: absolute; inset: -50%;
-  background-image:
-    repeating-linear-gradient(135deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 60px),
-    repeating-linear-gradient(45deg,  rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 60px);
-  animation: gridDrift 24s linear infinite;
+/* ═══════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════ */
+#hero{
+  position:relative;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
 }
-@keyframes gridDrift { 0% { transform: translate(0,0); } 100% { transform: translate(60px,60px); } }
+.hero-content{
+  position:relative;z-index:2;
+  text-align:center;
+  padding:160px 40px 100px;
+  max-width:900px;
+  margin:0 auto;
+}
+.hero-eyebrow{
+  font-family:var(--font-mono);
+  font-size:10px;letter-spacing:.5em;
+  color:var(--silver-3);text-transform:uppercase;
+  margin-bottom:32px;
+  opacity:0;transform:translateY(12px);
+}
+.hero-h1{
+  font-family:var(--font-serif);
+  font-size:clamp(42px,8vw,110px);
+  font-weight:300;line-height:1.0;
+  letter-spacing:-.01em;
+  margin-bottom:32px;
+  opacity:0;transform:translateY(20px);
+}
+.hero-h1 em{
+  font-style:italic;
+  background:var(--chrome);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{
+  font-size:clamp(14px,1.8vw,18px);
+  font-weight:300;
+  color:var(--silver-3);
+  max-width:480px;margin:0 auto 56px;
+  opacity:0;transform:translateY(16px);
+}
+.hero-actions{
+  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+  opacity:0;transform:translateY(16px);
+}
+.hero-scroll-hint{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.35em;color:var(--silver-4);text-transform:uppercase;
+  opacity:0;
+}
+.hero-scroll-line{
+  width:1px;height:48px;
+  background:linear-gradient(to bottom,var(--silver-4),transparent);
+  animation:scrollpulse 2s ease-in-out infinite;
+}
+@keyframes scrollpulse{
+  0%,100%{opacity:.3;}50%{opacity:1;}
+}
+/* 3D Orbit canvas inside hero */
+#orbit-canvas{
+  position:absolute;inset:0;
+  z-index:1;
+  pointer-events:all;
+}
+.orbit-hint{
+  position:absolute;bottom:100px;left:50%;transform:translateX(-50%);
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.3em;color:var(--silver-4);text-transform:uppercase;
+  z-index:3;pointer-events:none;
+  animation:blink 3s ease-in-out infinite 2s;
+}
+@keyframes blink{0%,100%{opacity:.4;}50%{opacity:.9;};}
 
-/* ============================================================
-   TYPOGRAPHY
-   ============================================================ */
-.eyebrow {
-  font-family: var(--font-mono); font-size: 11px; font-weight: 300;
-  letter-spacing: 0.42em; color: var(--text-3); text-transform: uppercase; margin-bottom: 20px;
-}
-.display-hl {
-  font-family: var(--font-display);
-  font-size: clamp(34px, 5vw, 70px);
-  font-weight: 700; line-height: 1.08; letter-spacing: -0.02em; color: var(--text-1);
-}
-.section-hl {
-  font-family: var(--font-display);
-  font-size: clamp(26px, 3.5vw, 46px);
-  font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; color: var(--text-1);
-}
-.grad-text {
-  background: var(--grad); -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent; background-clip: text;
-}
-.body-lg { font-size: 18px; line-height: 1.75; color: var(--text-2); }
-.body-md { font-size: 15px; line-height: 1.7;  color: var(--text-2); }
-
-/* ============================================================
-   LAYOUT
-   ============================================================ */
-.container        { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
-.container-narrow { max-width: 760px;  margin: 0 auto; padding: 0 40px; }
-section     { padding: 100px 0; position: relative; }
-.text-center { text-align: center; }
-.mt-8  { margin-top: 32px; }
-.mb-8  { margin-bottom: 32px; }
-.mb-12 { margin-bottom: 48px; }
-
-/* ============================================================
-   SCROLL REVEAL
-   ============================================================ */
-.reveal {
-  opacity: 0; transform: translateY(22px);
-  transition: opacity 0.75s var(--ease), transform 0.75s var(--ease);
-}
-.reveal.visible { opacity: 1; transform: translateY(0); }
-.d1 { transition-delay: 0.1s; } .d2 { transition-delay: 0.2s; }
-.d3 { transition-delay: 0.3s; } .d4 { transition-delay: 0.4s; }
-
-/* ============================================================
-   CARDS
-   ============================================================ */
-.card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border); border-radius: 4px; padding: 36px;
-  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease), background 0.3s var(--ease);
-  position: relative; overflow: hidden;
-}
-.card:hover {
-  border-color: var(--border-bright);
-  transform: translateY(-4px);
-  background: rgba(255,255,255,0.05);
-}
-.card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--grad); opacity: 0; transition: opacity 0.3s var(--ease);
-}
-.card:hover::before { opacity: 1; }
-.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.g2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-
-/* ============================================================
+/* ═══════════════════════════════════════════════
    BUTTONS
-   ============================================================ */
-.btn-primary {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 15px 34px; background: var(--text-1);
-  color: var(--black); font-size: 14px; font-weight: 600;
-  letter-spacing: 0.08em; border: none; border-radius: 3px;
-  transition: all 0.3s var(--ease);
+═══════════════════════════════════════════════ */
+.btn-p{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:16px 36px;
+  background:var(--silver-1);
+  color:var(--ink);
+  font-size:12px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;
+  border-radius:2px;border:none;
+  transition:all .3s var(--ease-out);
+  position:relative;overflow:hidden;
 }
-.btn-primary:hover    { background: var(--white); transform: translateY(-2px); }
-.btn-primary:disabled { opacity: 0.55; transform: none; cursor: not-allowed; }
-.btn-secondary {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 15px 34px; background: transparent;
-  color: var(--text-1); font-size: 14px; font-weight: 500;
-  letter-spacing: 0.08em; border: 1px solid var(--border);
-  border-radius: 3px; transition: all 0.3s var(--ease);
+.btn-p::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 0%,rgba(255,255,255,.5) 50%,transparent 100%);
+  transform:translateX(-100%);
+  transition:transform .5s var(--ease-out);
 }
-.btn-secondary:hover { border-color: var(--border-bright); color: var(--white); transform: translateY(-2px); }
+.btn-p:hover{background:#fff;transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,255,255,.15);}
+.btn-p:hover::before{transform:translateX(100%);}
+.btn-s{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:16px 36px;
+  background:transparent;
+  color:var(--silver-1);
+  font-size:12px;font-weight:400;
+  letter-spacing:.16em;text-transform:uppercase;
+  border:1px solid var(--border-hi);border-radius:2px;
+  transition:all .3s var(--ease-out);
+}
+.btn-s:hover{border-color:var(--silver-2);color:#fff;transform:translateY(-2px);}
 
-/* ============================================================
-   FORMS
-   ============================================================ */
-.form-field { margin-bottom: 20px; }
-.form-field label {
-  display: block; font-size: 11px; letter-spacing: 0.18em;
-  color: var(--text-3); text-transform: uppercase; margin-bottom: 8px;
-}
-.form-input, .form-textarea, .form-select {
-  width: 100%; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 3px; padding: 13px 18px; color: var(--text-1);
-  font-size: 14px; transition: border-color 0.3s var(--ease); outline: none;
-}
-.form-input:focus, .form-textarea:focus, .form-select:focus {
-  border-color: var(--border-bright); background: rgba(255,255,255,0.04);
-}
-.form-textarea { min-height: 130px; resize: vertical; }
-.form-select   { appearance: none; }
-.form-success {
-  display: none; margin-top: 12px; padding: 16px 20px;
-  background: rgba(42,42,42,0.5); border: 1px solid var(--border-bright);
-  border-radius: 3px; font-family: var(--font-mono); font-size: 12px;
-  color: var(--text-1); letter-spacing: 0.08em; text-align: center;
-}
-.form-success.show { display: block; }
-.form-error {
-  display: none; margin-top: 12px; padding: 14px 18px;
-  background: rgba(180,30,30,0.1); border: 1px solid rgba(180,30,30,0.3);
-  border-radius: 3px; font-size: 13px; color: #f08080; text-align: center;
-}
-.form-error.show { display: block; }
+/* ═══════════════════════════════════════════════
+   SECTION LAYOUT
+═══════════════════════════════════════════════ */
+.sec{padding:120px 0;position:relative;}
+.sec-dark{background:var(--ink-2);}
+.sec-surface{background:var(--ink-3);}
+.wrap{max-width:1200px;margin:0 auto;padding:0 48px;}
+.wrap-n{max-width:760px;margin:0 auto;padding:0 48px;}
+.tc{text-align:center;}
 
-/* ============================================================
-   TABS
-   ============================================================ */
-.tab-bar {
-  display: flex; gap: 4px;
-  border-bottom: 1px solid var(--border); margin-bottom: 32px;
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:10px;letter-spacing:.42em;
+  color:var(--silver-3);text-transform:uppercase;
+  margin-bottom:20px;display:block;
 }
-.tab-btn {
-  padding: 10px 20px; background: none; border: none;
-  font-size: 13px; font-weight: 500; color: var(--text-3);
-  letter-spacing: 0.08em;
-  border-bottom: 2px solid transparent; margin-bottom: -1px;
-  transition: all 0.3s var(--ease);
+.sec-h{
+  font-family:var(--font-serif);
+  font-size:clamp(28px,4vw,54px);
+  font-weight:300;line-height:1.1;
+  letter-spacing:-.01em;
+  margin-bottom:24px;
 }
-.tab-btn.active { color: var(--text-1); border-bottom-color: var(--accent); }
-.tab-btn:hover  { color: var(--text-2); }
-.tab-pane        { display: none; }
-.tab-pane.active { display: block; }
+.sec-h em{font-style:italic;}
+.sec-body{font-size:16px;font-weight:300;color:var(--silver-3);line-height:1.8;}
 
-/* ============================================================
-   BADGES
-   ============================================================ */
-.badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 12px; border-radius: 2px; font-family: var(--font-mono);
-  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+/* ═══════════════════════════════════════════════
+   REVEAL
+═══════════════════════════════════════════════ */
+.rv{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .9s var(--ease-out),transform .9s var(--ease-out);
 }
-.badge-live {
-  background: rgba(255,255,255,0.06); border: 1px solid var(--border-bright);
-  color: var(--text-1);
-}
-.badge-soon {
-  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-  color: var(--text-3);
-}
-.badge-live::before {
-  content: ''; width: 5px; height: 5px; border-radius: 50%;
-  background: #8fbc8f; animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.rv.vis{opacity:1;transform:translateY(0);}
+.d1{transition-delay:.1s;}.d2{transition-delay:.2s;}
+.d3{transition-delay:.3s;}.d4{transition-delay:.4s;}
 
-/* ============================================================
-   PILLAR NUM / LABELS
-   ============================================================ */
-.pillar-num {
-  font-family: var(--font-mono); font-size: 10px;
-  letter-spacing: 0.22em; color: var(--text-3); margin-bottom: 20px;
-  text-transform: uppercase;
+/* ═══════════════════════════════════════════════
+   MARQUEE TICKER
+═══════════════════════════════════════════════ */
+.ticker-wrap{
+  overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:18px 0;background:var(--ink-2);
+}
+.ticker{
+  display:flex;gap:0;
+  animation:tickerMove 30s linear infinite;
+  width:max-content;
+}
+.ticker-item{
+  font-family:var(--font-mono);font-size:11px;
+  letter-spacing:.22em;color:var(--silver-3);
+  text-transform:uppercase;
+  padding:0 48px;white-space:nowrap;
+}
+.ticker-dot{color:var(--silver-4);}
+@keyframes tickerMove{0%{transform:translateX(0);}100%{transform:translateX(-50%);};}
+
+/* ═══════════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════════ */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
+.card{
+  background:var(--ink-2);
+  padding:40px;
+  position:relative;overflow:hidden;
+  transition:background .4s;
+}
+.card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:var(--chrome);opacity:0;transition:opacity .4s;
+}
+.card:hover{background:var(--ink-3);}
+.card:hover::after{opacity:1;}
+.card-num{
+  font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.25em;color:var(--silver-4);
+  margin-bottom:24px;
+}
+.card-h{
+  font-family:var(--font-serif);
+  font-size:22px;font-weight:400;
+  color:var(--silver-1);margin-bottom:14px;
+  line-height:1.2;
+}
+.card-b{font-size:14px;font-weight:300;color:var(--silver-3);line-height:1.8;}
+.pill-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;}
+.pill{
+  padding:5px 14px;
+  border:1px solid var(--border);border-radius:1px;
+  font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.1em;color:var(--silver-3);
+  transition:border-color .3s,color .3s;
+}
+.card:hover .pill{border-color:var(--border-hi);color:var(--silver-2);}
+
+/* ═══════════════════════════════════════════════
+   AI LAB SECTION
+═══════════════════════════════════════════════ */
+.lab-wrap{
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+}
+.lab-visual{
+  position:relative;height:420px;
+  border:1px solid var(--border);
+  overflow:hidden;
+  background:radial-gradient(ellipse at center,rgba(180,180,200,0.05) 0%,transparent 70%);
+}
+#ai-canvas{width:100%;height:100%;display:block;}
+.lab-badge{
+  position:absolute;top:20px;left:20px;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;
+  border:1px solid var(--border-hi);
+  background:rgba(5,5,7,.7);
+  backdrop-filter:blur(12px);
+  font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.2em;color:var(--silver-2);
+  text-transform:uppercase;
+}
+.lab-badge-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#aaa;
+  animation:labpulse 2s ease-in-out infinite;
+}
+@keyframes labpulse{0%,100%{opacity:.3;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}
+.lab-info{display:flex;flex-direction:column;gap:28px;}
+.lab-h{
+  font-family:var(--font-serif);
+  font-size:clamp(32px,4vw,52px);
+  font-weight:300;line-height:1.05;
+}
+.lab-h em{font-style:italic;}
+.lab-desc{font-size:15px;font-weight:300;color:var(--silver-3);line-height:1.8;}
+.lab-features{display:flex;flex-direction:column;gap:0;}
+.lab-feat{
+  display:flex;align-items:center;gap:16px;
+  padding:14px 0;border-bottom:1px solid var(--border);
+  font-size:13px;font-weight:300;color:var(--silver-2);
+  letter-spacing:.04em;
+}
+.lab-feat::before{
+  content:'';width:4px;height:4px;border-radius:50%;
+  background:var(--silver-3);flex-shrink:0;
+}
+.download-zone{
+  display:flex;flex-direction:column;gap:12px;
+  padding:24px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.02);
+  position:relative;
+}
+.download-zone::before{
+  content:'BETA';position:absolute;top:-10px;right:16px;
+  background:var(--ink-2);
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.3em;color:var(--silver-3);
+  padding:0 8px;
+}
+.download-label{
+  font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.3em;color:var(--silver-3);
+  text-transform:uppercase;
+}
+.download-name{
+  font-family:var(--font-serif);
+  font-size:22px;font-weight:400;color:var(--silver-1);
+}
+.download-meta{
+  font-size:12px;color:var(--silver-4);
+  font-family:var(--font-mono);letter-spacing:.08em;
 }
 
-/* ============================================================
-   ICON BOX
-   ============================================================ */
-.icon-box {
-  width: 44px; height: 44px; border: 1px solid var(--border);
-  border-radius: 4px; display: flex; align-items: center; justify-content: center;
-  margin-bottom: 24px; transition: border-color 0.3s var(--ease);
+/* ═══════════════════════════════════════════════
+   CHATBOT TEASER
+═══════════════════════════════════════════════ */
+.chat-teaser{
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
 }
-.card:hover .icon-box { border-color: var(--border-bright); }
+.chat-window{
+  border:1px solid var(--border);
+  overflow:hidden;
+  background:var(--ink-2);
+}
+.chat-titlebar{
+  display:flex;align-items:center;gap:8px;
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  background:var(--ink-3);
+}
+.chat-dot{width:8px;height:8px;border-radius:50%;}
+.chat-msgs{padding:24px;display:flex;flex-direction:column;gap:16px;min-height:240px;}
+.msg{
+  max-width:80%;padding:12px 16px;
+  font-size:13px;font-weight:300;
+  line-height:1.6;letter-spacing:.01em;
+}
+.msg-ai{
+  background:var(--ink-3);border:1px solid var(--border);
+  color:var(--silver-2);align-self:flex-start;
+}
+.msg-user{
+  background:rgba(255,255,255,0.06);border:1px solid var(--border-hi);
+  color:var(--silver-1);align-self:flex-end;
+}
+.msg-typing{display:flex;gap:4px;padding:16px;align-self:flex-start;}
+.msg-typing span{
+  width:5px;height:5px;border-radius:50%;background:var(--silver-3);
+  animation:typedot 1.2s ease-in-out infinite;
+}
+.msg-typing span:nth-child(2){animation-delay:.2s;}
+.msg-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes typedot{0%,80%,100%{opacity:.2;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
 
-/* ============================================================
-   SERVICE DETAIL ROWS
-   ============================================================ */
-.service-row {
-  display: grid; grid-template-columns: 1fr 2fr; gap: 48px; align-items: start;
+/* ═══════════════════════════════════════════════
+   PROCESS
+═══════════════════════════════════════════════ */
+.process{display:flex;flex-direction:column;max-width:680px;margin:0 auto;}
+.proc{
+  display:grid;grid-template-columns:64px 1fr;gap:24px;
+  padding:32px 0;border-bottom:1px solid var(--border);
+  align-items:start;
+}
+.proc:last-child{border-bottom:none;}
+.proc-n{
+  font-family:var(--font-mono);font-size:11px;
+  letter-spacing:.2em;color:var(--silver-4);padding-top:4px;
+}
+.proc-h{
+  font-family:var(--font-serif);
+  font-size:20px;font-weight:400;
+  color:var(--silver-1);margin-bottom:8px;
+}
+.proc-b{font-size:14px;font-weight:300;color:var(--silver-3);line-height:1.8;}
+
+/* ═══════════════════════════════════════════════
+   COURSES
+═══════════════════════════════════════════════ */
+.course-card{
+  border:1px solid var(--border);
+  padding:36px;
+  display:flex;flex-direction:column;gap:16px;
+  position:relative;overflow:hidden;
+  transition:border-color .4s,background .4s;
+  background:var(--ink-2);
+}
+.course-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:var(--chrome);opacity:0;transition:opacity .4s;
+}
+.course-card:hover{border-color:var(--border-hi);background:var(--ink-3);}
+.course-card:hover::before{opacity:1;}
+.c-dur{
+  font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.18em;color:var(--silver-3);
+}
+.c-h{
+  font-family:var(--font-serif);
+  font-size:24px;font-weight:400;color:var(--silver-1);
+}
+.badge-live{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border:1px solid var(--border-hi);
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.2em;color:var(--silver-2);text-transform:uppercase;
+}
+.badge-live::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:#9fccaf;animation:labpulse 2s infinite;
+}
+.badge-soon{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border:1px solid var(--border);
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.2em;color:var(--silver-3);text-transform:uppercase;
 }
 
-/* ============================================================
-   PROCESS STEPS
-   ============================================================ */
-.process-list { display: flex; flex-direction: column; gap: 0; max-width: 680px; margin: 0 auto; }
-.process-item {
-  display: grid; grid-template-columns: 60px 1fr; gap: 24px;
-  padding: 28px 0; border-bottom: 1px solid var(--border); align-items: start;
+/* ═══════════════════════════════════════════════
+   CONTACT
+═══════════════════════════════════════════════ */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.form-field{margin-bottom:20px;}
+.form-label{
+  display:block;font-family:var(--font-mono);
+  font-size:9px;letter-spacing:.28em;
+  color:var(--silver-3);text-transform:uppercase;margin-bottom:10px;
 }
-.process-item:last-child { border-bottom: none; }
-.process-num   { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.2em; padding-top: 4px; }
-.process-title { font-family: var(--font-display); font-size: 18px; font-weight: 600; color: var(--text-1); margin-bottom: 6px; }
+.form-input,.form-textarea,.form-select{
+  width:100%;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:1px;
+  padding:14px 18px;
+  color:var(--silver-1);font-size:14px;font-weight:300;
+  outline:none;
+  transition:border-color .3s,background .3s;
+  -webkit-appearance:none;
+}
+.form-input:focus,.form-textarea:focus,.form-select:focus{
+  border-color:var(--border-hi);
+  background:rgba(255,255,255,0.05);
+}
+.form-textarea{min-height:130px;resize:vertical;}
+.form-ok{
+  display:none;margin-top:14px;padding:16px 20px;
+  border:1px solid var(--border-hi);
+  font-family:var(--font-mono);font-size:11px;
+  letter-spacing:.1em;color:var(--silver-1);text-align:center;
+  background:rgba(255,255,255,0.03);
+}
+.form-ok.show{display:block;}
+.form-err{
+  display:none;margin-top:14px;padding:14px 18px;
+  background:rgba(160,30,30,.1);border:1px solid rgba(160,30,30,.3);
+  font-size:13px;color:#e08080;
+}
+.form-err.show{display:block;}
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:32px;}
+.tab-btn{
+  padding:12px 22px;background:none;border:none;
+  font-size:11px;font-weight:400;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--silver-3);
+  border-bottom:1px solid transparent;margin-bottom:-1px;
+  transition:all .3s;
+}
+.tab-btn.on{color:var(--silver-1);border-bottom-color:var(--silver-2);}
+.tab-pane{display:none;}
+.tab-pane.on{display:block;}
+.c-info{display:flex;flex-direction:column;gap:0;margin-top:16px;}
+.c-row{
+  display:flex;align-items:center;gap:20px;
+  padding:18px 0;border-bottom:1px solid var(--border);
+}
+.c-row:last-child{border-bottom:none;}
+.c-lbl{
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.22em;color:var(--silver-4);
+  text-transform:uppercase;width:64px;flex-shrink:0;
+}
+.c-val{font-size:14px;font-weight:300;color:var(--silver-1);}
 
-/* ============================================================
-   COURSE CARDS
-   ============================================================ */
-.course-card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border); border-radius: 4px; padding: 36px;
-  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
-  position: relative; overflow: hidden;
-  display: flex; flex-direction: column; gap: 16px;
-}
-.course-card:hover { border-color: var(--border-bright); transform: translateY(-4px); }
-.course-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--grad); opacity: 0; transition: opacity 0.3s var(--ease);
-}
-.course-card:hover::before { opacity: 1; }
-.course-duration { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.15em; }
-.course-topics   { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-.topic-pill {
-  padding: 4px 12px; background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border); border-radius: 2px;
-  font-family: var(--font-mono); font-size: 11px;
-  color: var(--text-3); letter-spacing: 0.05em;
-}
-
-/* ============================================================
-   CONTACT INFO
-   ============================================================ */
-.contact-info { display: flex; flex-direction: column; gap: 12px; margin-top: 32px; }
-.contact-row {
-  display: flex; align-items: center; gap: 20px;
-  padding: 18px 24px; border: 1px solid var(--border);
-  border-radius: 4px; transition: border-color 0.3s var(--ease);
-}
-.contact-row:hover  { border-color: var(--border-bright); }
-.contact-label {
-  font-family: var(--font-mono); font-size: 10px;
-  letter-spacing: 0.2em; color: var(--text-3); text-transform: uppercase;
-  width: 68px; flex-shrink: 0;
-}
-.contact-value { font-size: 14px; color: var(--text-1); }
-
-/* ============================================================
+/* ═══════════════════════════════════════════════
    PAGE HERO
-   ============================================================ */
-.page-hero {
-  padding: 160px 0 80px; text-align: center;
-  position: relative; overflow: hidden;
+═══════════════════════════════════════════════ */
+.page-hero{
+  padding:160px 0 80px;text-align:center;
+  position:relative;overflow:hidden;
 }
-.page-hero-inner { position: relative; z-index: 1; }
+.page-hero .grid-vfx{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);
+}
 
-/* ============================================================
-   DIVIDERS
-   ============================================================ */
-.divider      { height: 1px; background: var(--border); }
-.divider-grad { height: 1px; background: linear-gradient(90deg, transparent, var(--border-bright), transparent); }
-
-/* ============================================================
+/* ═══════════════════════════════════════════════
    FOOTER
-   ============================================================ */
-footer { background: var(--bg-2); border-top: 1px solid var(--border); padding: 60px 0 32px; }
-.footer-grid {
-  display: grid; grid-template-columns: 1.6fr 1fr 1fr;
-  gap: 48px; margin-bottom: 48px;
+═══════════════════════════════════════════════ */
+footer{
+  background:var(--ink-2);
+  border-top:1px solid var(--border);
+  padding:80px 0 40px;
 }
-.footer-col-title {
-  font-family: var(--font-mono); font-size: 10px;
-  letter-spacing: 0.25em; color: var(--text-3);
-  text-transform: uppercase; margin-bottom: 20px;
+.footer-top{
+  display:grid;grid-template-columns:2fr 1fr 1fr;
+  gap:60px;margin-bottom:60px;
 }
-.footer-links  { display: flex; flex-direction: column; gap: 12px; }
-.footer-link {
-  font-size: 14px; color: var(--text-2); background: none; border: none;
-  text-align: left; padding: 0; transition: color 0.3s var(--ease);
+.f-brand{
+  font-family:var(--font-serif);
+  font-size:17px;font-weight:400;
+  letter-spacing:.28em;text-transform:uppercase;
+  background:var(--chrome);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:16px;display:block;
 }
-.footer-link:hover { color: var(--text-1); }
-.footer-tagline { font-size: 14px; color: var(--text-3); line-height: 1.7; }
-.footer-bottom {
-  padding-top: 24px; border-top: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 12px;
+.f-tag{font-size:13px;font-weight:300;color:var(--silver-3);line-height:1.8;}
+.f-col-h{
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.3em;color:var(--silver-4);
+  text-transform:uppercase;margin-bottom:20px;
 }
-.footer-copy   { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.08em; }
-.footer-legal  { display: flex; gap: 24px; }
-.footer-legal a { font-size: 12px; color: var(--text-3); transition: color 0.3s var(--ease); }
-.footer-legal a:hover { color: var(--text-1); }
+.f-links{display:flex;flex-direction:column;gap:12px;}
+.f-lnk{
+  font-size:13px;font-weight:300;color:var(--silver-3);
+  background:none;border:none;text-align:left;padding:0;
+  transition:color .3s;
+}
+.f-lnk:hover{color:var(--silver-1);}
+.footer-bottom{
+  padding-top:32px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+}
+.f-copy{
+  font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.12em;color:var(--silver-4);
+}
 
-/* ============================================================
-   COOKIE BANNER
-   ============================================================ */
-#cookie-banner {
-  position: fixed; bottom: 24px; left: 50%;
-  transform: translateX(-50%) translateY(120%);
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 4px; padding: 16px 24px;
-  display: flex; align-items: center; gap: 20px; z-index: 8000;
-  transition: transform 0.5s var(--ease);
-  width: max-content; max-width: calc(100vw - 48px);
+/* ═══════════════════════════════════════════════
+   COOKIE
+═══════════════════════════════════════════════ */
+#cookie{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(140%);
+  background:var(--ink-3);border:1px solid var(--border-hi);
+  padding:16px 24px;
+  display:flex;align-items:center;gap:20px;
+  z-index:8000;
+  transition:transform .5s var(--ease-out);
+  width:max-content;max-width:calc(100vw - 48px);
 }
-#cookie-banner.show { transform: translateX(-50%) translateY(0); }
-.cookie-text { font-size: 13px; color: var(--text-2); }
-.cookie-btns { display: flex; gap: 8px; flex-shrink: 0; }
-.c-btn {
-  padding: 7px 16px; border-radius: 3px; font-size: 12px;
-  font-weight: 500; letter-spacing: 0.06em;
-  border: 1px solid var(--border); background: none; color: var(--text-2);
-  transition: all 0.3s var(--ease);
+#cookie.show{transform:translateX(-50%) translateY(0);}
+.ck-text{font-size:12px;font-weight:300;color:var(--silver-3);}
+.ck-btn{
+  padding:8px 18px;border:1px solid var(--border-hi);
+  background:var(--silver-1);color:var(--ink);
+  font-size:11px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;
+  transition:background .3s;
 }
-.c-accept { background: var(--text-1); color: var(--black); border-color: var(--text-1); }
-.c-accept:hover { background: var(--white); }
+.ck-btn:hover{background:#fff;}
 
-/* ============================================================
+/* ═══════════════════════════════════════════════
+   ABOUT SPLIT
+═══════════════════════════════════════════════ */
+.about-split{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.about-stat{
+  padding:32px 0;border-bottom:1px solid var(--border);
+}
+.stat-n{
+  font-family:var(--font-serif);
+  font-size:clamp(36px,5vw,64px);
+  font-weight:300;color:var(--silver-1);
+  letter-spacing:-.02em;line-height:1;
+}
+.stat-n em{font-style:italic;}
+.stat-l{
+  font-family:var(--font-mono);font-size:10px;
+  letter-spacing:.28em;color:var(--silver-3);
+  text-transform:uppercase;margin-top:6px;
+}
+
+/* ═══════════════════════════════════════════════
+   LEGAL
+═══════════════════════════════════════════════ */
+.legal-h{
+  font-family:var(--font-serif);
+  font-size:22px;font-weight:400;
+  color:var(--silver-1);margin-bottom:16px;
+}
+.legal-p{font-size:14px;font-weight:300;color:var(--silver-3);line-height:1.9;margin-bottom:14px;}
+.divider{height:1px;background:var(--border);margin:40px 0;}
+
+/* ═══════════════════════════════════════════════
    RESPONSIVE
-   ============================================================ */
-@media (max-width: 900px) {
-  .nav-links    { display: none; }
-  .btn-nav-cta  { display: none; }
-  .hamburger    { display: flex; }
-  .g3           { grid-template-columns: repeat(2, 1fr); }
-  .g2           { grid-template-columns: 1fr; }
-  .footer-grid  { grid-template-columns: 1fr 1fr; gap: 32px; }
-  .service-row  { grid-template-columns: 1fr; gap: 20px; }
+═══════════════════════════════════════════════ */
+@media(max-width:960px){
+  .nav-links,.nav-cta{display:none;}
+  .hamburger{display:flex;}
+  .grid3{grid-template-columns:1fr 1fr;}
+  .grid2{grid-template-columns:1fr;}
+  .lab-wrap,.chat-teaser,.about-split,.contact-grid,.chat-teaser{grid-template-columns:1fr;gap:40px;}
+  .footer-top{grid-template-columns:1fr 1fr;gap:40px;}
 }
-@media (max-width: 600px) {
-  #navbar           { padding: 0 20px; }
-  .container        { padding: 0 20px; }
-  .container-narrow { padding: 0 20px; }
-  section           { padding: 72px 0; }
-  .page-hero        { padding: 120px 0 60px; }
-  .g3               { grid-template-columns: 1fr; }
-  .footer-grid      { grid-template-columns: 1fr; }
-  .footer-bottom    { flex-direction: column; align-items: flex-start; }
-  .process-item     { grid-template-columns: 44px 1fr; gap: 16px; }
+@media(max-width:600px){
+  #nav{padding:0 20px;}
+  .wrap,.wrap-n{padding:0 20px;}
+  .sec{padding:80px 0;}
+  .page-hero{padding:120px 0 60px;}
+  .grid3{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr;}
+  .footer-bottom{flex-direction:column;align-items:flex-start;}
+  .proc{grid-template-columns:48px 1fr;gap:16px;}
 }
 </style>
 </head>
-
 <body>
 
 <!-- CURSOR -->
-<div id="cursor-dot"></div>
-<div id="cursor-ring"></div>
+<div id="c-dot"></div>
+<div id="c-ring"></div>
 
 <!-- INTRO -->
 <div id="intro">
-  <div class="intro-logo">
-    <div class="intro-wordmark">NADHA LABS</div>
-    <div class="intro-sub">Web · Digital · Courses</div>
-  </div>
+  <div class="intro-brand">Nadha Labs</div>
+  <div class="intro-bar"></div>
+  <div class="intro-sub">Intelligence · Craft · Systems</div>
 </div>
 
-<!-- NAVBAR -->
-<nav id="navbar">
-  <button class="logo-full" onclick="navigate('home')">
-    <img src="logo.png" alt="Nadha Labs" class="logo-img" style="height:34px;width:34px;" onerror="this.style.display='none'">
-    <span class="logo-wordmark">NADHA <span>LABS</span></span>
+<!-- NAV -->
+<nav id="nav">
+  <button class="nav-logo" onclick="go('home')">
+    <img src="logo.png" alt="Nadha Labs" onerror="this.style.display='none'">
+    <span class="nav-wordmark">Nadha Labs</span>
   </button>
   <div class="nav-links">
-    <button class="nav-link" onclick="navigate('home')">Home</button>
-    <button class="nav-link" onclick="navigate('services')">Services</button>
-    <button class="nav-link" onclick="navigate('courses')">Courses</button>
-    <button class="nav-link" onclick="navigate('about')">About</button>
-    <button class="btn-nav-cta" onclick="navigate('contact')">Contact Us</button>
+    <button class="nav-lnk" onclick="go('home')">Home</button>
+    <button class="nav-lnk" onclick="go('services')">Services</button>
+    <button class="nav-lnk" onclick="go('lab')">AI Lab</button>
+    <button class="nav-lnk" onclick="go('courses')">Courses</button>
+    <button class="nav-lnk" onclick="go('about')">About</button>
+    <button class="nav-cta" onclick="go('contact')">Contact</button>
   </div>
-  <button class="hamburger" onclick="toggleMobile()" aria-label="Open menu">
+  <button class="hamburger" onclick="toggleMob()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
 </nav>
 
-<!-- MOBILE OVERLAY -->
-<div id="mobile-overlay">
-  <button class="close-btn" onclick="toggleMobile()">✕</button>
-  <button class="mobile-link" onclick="go('home')">Home</button>
-  <button class="mobile-link" onclick="go('services')">Services</button>
-  <button class="mobile-link" onclick="go('courses')">Courses</button>
-  <button class="mobile-link" onclick="go('about')">About</button>
-  <button class="mobile-link" onclick="go('contact')">Contact</button>
+<!-- MOBILE -->
+<div id="mob">
+  <button class="mob-close" onclick="toggleMob()">✕</button>
+  <button class="mob-lnk" onclick="mgo('home')">Home</button>
+  <button class="mob-lnk" onclick="mgo('services')">Services</button>
+  <button class="mob-lnk" onclick="mgo('lab')">AI Lab</button>
+  <button class="mob-lnk" onclick="mgo('courses')">Courses</button>
+  <button class="mob-lnk" onclick="mgo('about')">About</button>
+  <button class="mob-lnk" onclick="mgo('contact')">Contact</button>
 </div>
 
-<!-- ============================================================
-     PAGE: HOME
-     ============================================================ -->
+
+<!-- ═══════════════════════════════════════════
+     HOME
+═══════════════════════════════════════════ -->
 <div id="page-home" class="page active">
 
-  <!-- Hero -->
-  <section class="page-hero" style="padding:160px 0 100px;">
-    <div class="grid-bg"></div>
-    <div class="container page-hero-inner">
-      <div class="eyebrow reveal">Based in Kerala, India</div>
-      <h1 class="display-hl reveal d1" style="max-width:760px;margin:0 auto 28px;">
-        We Build Websites &amp; Digital Products<br>
-        <span class="grad-text">That Actually Work</span>
+  <!-- HERO -->
+  <section id="hero">
+    <canvas id="orbit-canvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-eyebrow" id="he">Kerala, India · Est. 2024</div>
+      <h1 class="hero-h1" id="hh">
+        We Build<br><em>Digital Systems</em><br>That Matter
       </h1>
-      <p class="body-lg reveal d2" style="max-width:520px;margin:0 auto 48px;">
-        Nadha Labs is a web development studio offering professional websites, e-commerce stores, landing pages, and digital services for businesses ready to grow online.
-      </p>
-      <div class="reveal d3" style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-        <button class="btn-primary" onclick="navigate('contact')">Start a Project</button>
-        <button class="btn-secondary" onclick="navigate('services')">Our Services</button>
+      <p class="hero-sub" id="hs">Websites. AI tools. Courses. A studio building the future of digital — one project at a time.</p>
+      <div class="hero-actions" id="ha">
+        <button class="btn-p" onclick="go('contact')">Start a Project</button>
+        <button class="btn-s" onclick="go('lab')">Explore AI Lab →</button>
       </div>
+    </div>
+    <div class="orbit-hint">Drag to orbit · Click to explore</div>
+    <div class="hero-scroll-hint" id="hscroll">
+      <span>Scroll</span>
+      <div class="hero-scroll-line"></div>
     </div>
   </section>
 
-  <div class="divider"></div>
-
-  <!-- Services Overview -->
-  <section>
-    <div class="container">
-      <div class="text-center mb-12 reveal">
-        <div class="eyebrow">What We Do</div>
-        <h2 class="section-hl">Built for Real Business Needs</h2>
-      </div>
-      <div class="g3">
-        <div class="card reveal d1">
-          <div class="icon-box">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#606060" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-          </div>
-          <div class="pillar-num">01 — Web Development</div>
-          <h3 style="font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--text-1);margin-bottom:12px;">Business Websites</h3>
-          <p class="body-md">Clean, fast, and professional websites tailored to your brand — built to make a strong first impression and turn visitors into customers.</p>
-        </div>
-        <div class="card reveal d2">
-          <div class="icon-box">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#606060" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-          </div>
-          <div class="pillar-num">02 — E-Commerce</div>
-          <h3 style="font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--text-1);margin-bottom:12px;">Online Stores</h3>
-          <p class="body-md">Fully functional online stores, easy to manage and built to sell — with payment integration, product management, and order tracking.</p>
-        </div>
-        <div class="card reveal d3">
-          <div class="icon-box">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#606060" stroke-width="1.5"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-          </div>
-          <div class="pillar-num">03 — Landing Pages</div>
-          <h3 style="font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--text-1);margin-bottom:12px;">Landing Pages</h3>
-          <p class="body-md">High-converting pages for product launches, campaigns, and lead generation — focused, fast, and built around a single goal.</p>
-        </div>
-      </div>
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker" id="ticker">
+      <span class="ticker-item">Web Development <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">E-Commerce <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">AI Tools <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">Landing Pages <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">UI/UX Design <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">Python Courses <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">Mobile Apps <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">Business Chatbots <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">Web Development <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">E-Commerce <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">AI Tools <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">Landing Pages <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">UI/UX Design <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">Python Courses <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">Mobile Apps <span class="ticker-dot">·</span></span>
+      <span class="ticker-item">Business Chatbots <span class="ticker-dot">·</span></span>
     </div>
-  </section>
+  </div>
 
-  <div class="divider"></div>
-
-  <!-- Courses Teaser -->
-  <section style="background:var(--bg-2);">
-    <div class="container">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;" class="home-split">
-        <div class="reveal">
-          <div class="eyebrow">Also at Nadha Labs</div>
-          <h2 class="section-hl mb-8">Tech Courses for<br>the Next Generation</h2>
-          <p class="body-md mb-8">We run hands-on training programmes in Python and web development — designed for students and young learners who want practical, job-ready skills.</p>
-          <button class="btn-secondary" onclick="navigate('courses')">View Courses →</button>
-        </div>
-        <div class="reveal d1" style="display:flex;flex-direction:column;gap:12px;">
-          <div class="card" style="padding:24px;">
-            <div class="badge badge-live" style="margin-bottom:12px;">Active</div>
-            <h4 style="font-family:var(--font-display);font-weight:700;font-size:17px;color:var(--text-1);margin-bottom:6px;">Python Programming</h4>
-            <p class="body-md" style="font-size:13px;">Beginner to intermediate. Hands-on, project-based learning.</p>
-          </div>
-          <div class="card" style="padding:24px;">
-            <div class="badge badge-live" style="margin-bottom:12px;">Active</div>
-            <h4 style="font-family:var(--font-display);font-weight:700;font-size:17px;color:var(--text-1);margin-bottom:6px;">Web Development</h4>
-            <p class="body-md" style="font-size:13px;">HTML, CSS, JavaScript. Build real websites from scratch.</p>
-          </div>
-        </div>
+  <!-- SERVICES OVERVIEW -->
+  <section class="sec sec-dark">
+    <div class="wrap">
+      <div class="tc rv" style="margin-bottom:60px;">
+        <span class="eyebrow">What We Build</span>
+        <h2 class="sec-h">Craft Meets <em>Technology</em></h2>
       </div>
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
-  <!-- What's Next -->
-  <section>
-    <div class="container text-center">
-      <div class="reveal">
-        <div class="eyebrow">What's Next</div>
-        <h2 class="section-hl mb-8">Building Toward Something Bigger</h2>
-        <p class="body-lg mb-12" style="max-width:560px;margin-left:auto;margin-right:auto;">We are currently a web development studio. In the months ahead, we are also building towards mobile app development and AI-powered tools.</p>
-        <div class="g2" style="max-width:540px;margin:0 auto;text-align:left;">
-          <div class="card" style="padding:24px;">
-            <div class="badge badge-soon" style="margin-bottom:12px;">Coming Soon</div>
-            <h4 style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--text-1);">Mobile App Development</h4>
+      <div class="grid3">
+        <div class="card rv d1">
+          <div class="card-num">01 — Web</div>
+          <div class="card-h">Business Websites</div>
+          <p class="card-b">Clean, fast, brand-led websites that convert visitors into customers.</p>
+          <div class="pill-wrap">
+            <span class="pill">Responsive</span>
+            <span class="pill">SEO-Ready</span>
+            <span class="pill">CMS</span>
           </div>
-          <div class="card" style="padding:24px;">
-            <div class="badge badge-soon" style="margin-bottom:12px;">Coming Soon</div>
-            <h4 style="font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--text-1);">AI-Powered Tools</h4>
+        </div>
+        <div class="card rv d2">
+          <div class="card-num">02 — Commerce</div>
+          <div class="card-h">Online Stores</div>
+          <p class="card-b">Full e-commerce builds from product listing to secure checkout.</p>
+          <div class="pill-wrap">
+            <span class="pill">Payments</span>
+            <span class="pill">Inventory</span>
+            <span class="pill">Orders</span>
+          </div>
+        </div>
+        <div class="card rv d3">
+          <div class="card-num">03 — AI</div>
+          <div class="card-h">AI Tools & Chatbots</div>
+          <p class="card-b">Intelligent systems that automate and elevate your business operations.</p>
+          <div class="pill-wrap">
+            <span class="pill">Chatbots</span>
+            <span class="pill">Automation</span>
+            <span class="pill">AI Tools</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="divider"></div>
+  <!-- AI LAB TEASER -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="lab-wrap">
+        <div class="lab-visual rv">
+          <canvas id="ai-canvas"></canvas>
+          <div class="lab-badge">
+            <div class="lab-badge-dot"></div>
+            In Development
+          </div>
+        </div>
+        <div class="lab-info">
+          <span class="eyebrow rv">AI Lab</span>
+          <h2 class="lab-h rv d1">The First <em>Nadha</em><br>AI Tool is Coming</h2>
+          <p class="lab-desc rv d2">We are building an AI-powered tool for business owners — designed to help you make better decisions, faster. Currently in private development.</p>
+          <div class="lab-features rv d3">
+            <div class="lab-feat">Designed for small & medium businesses</div>
+            <div class="lab-feat">No technical knowledge required</div>
+            <div class="lab-feat">Built and tested in Kerala</div>
+            <div class="lab-feat">Free beta access for early registrants</div>
+          </div>
+          <div class="download-zone rv d4">
+            <div class="download-label">Upcoming Release</div>
+            <div class="download-name">Nadha Business AI — Beta</div>
+            <div class="download-meta">Version 0.1 · Available Soon · Free</div>
+            <button class="btn-p" onclick="go('lab')" style="align-self:flex-start;margin-top:8px;">
+              Join Waitlist →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHATBOT TEASER -->
+  <section class="sec sec-surface">
+    <div class="wrap">
+      <div class="chat-teaser">
+        <div class="rv">
+          <span class="eyebrow">Coming Soon</span>
+          <h2 class="sec-h">A Chatbot That<br>Grows Your <em>Business</em></h2>
+          <p class="sec-body" style="margin-bottom:28px;">An intelligent assistant trained on your business — answering customer questions, capturing leads, and working 24/7 while you sleep.</p>
+          <div class="lab-features" style="margin-bottom:28px;">
+            <div class="lab-feat">Answers product & service questions instantly</div>
+            <div class="lab-feat">Captures and qualifies leads automatically</div>
+            <div class="lab-feat">Integrates into any website we build</div>
+          </div>
+          <button class="btn-s" onclick="go('contact')">Enquire About Early Access</button>
+        </div>
+        <div class="chat-window rv d2">
+          <div class="chat-titlebar">
+            <div class="chat-dot" style="background:#ff6058;"></div>
+            <div class="chat-dot" style="background:#febc2e;"></div>
+            <div class="chat-dot" style="background:#28c840;"></div>
+            <span style="margin-left:8px;font-family:var(--font-mono);font-size:10px;color:var(--silver-3);letter-spacing:.15em;">NADHA BUSINESS AI</span>
+          </div>
+          <div class="chat-msgs" id="chat-demo">
+            <div class="msg msg-ai" style="opacity:0;transition:opacity .6s;">Hello! I'm your Nadha business assistant. How can I help you today?</div>
+            <div class="msg msg-user" style="opacity:0;transition:opacity .6s .8s;">What services do you offer?</div>
+            <div class="msg msg-ai" style="opacity:0;transition:opacity .6s 1.8s;">We offer web development, e-commerce, landing pages, and AI tools — all tailored to your business goals. Want to schedule a free consultation?</div>
+            <div class="msg-typing" style="opacity:0;transition:opacity .4s 2.8s;">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COURSES TEASER -->
+  <section class="sec sec-dark">
+    <div class="wrap">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;" class="home-split">
+        <div class="rv">
+          <span class="eyebrow">Courses</span>
+          <h2 class="sec-h">Skills for the<br><em>Next Generation</em></h2>
+          <p class="sec-body" style="margin-bottom:32px;">Hands-on, project-based tech courses for students and young learners in Kerala — Python, web development, and more.</p>
+          <button class="btn-s" onclick="go('courses')">View All Courses →</button>
+        </div>
+        <div class="rv d1" style="display:flex;flex-direction:column;gap:16px;">
+          <div class="course-card">
+            <div class="badge-live">Active</div>
+            <div class="c-h">Python Programming</div>
+            <div class="c-dur">4 Weeks · Beginner to Intermediate</div>
+          </div>
+          <div class="course-card">
+            <div class="badge-live">Active</div>
+            <div class="c-h">Web Development</div>
+            <div class="c-dur">4 Weeks · Beginner Friendly</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- CTA -->
-  <section style="background:var(--bg-2);">
-    <div class="container text-center reveal">
-      <div class="eyebrow">Let's Work Together</div>
-      <h2 class="section-hl mb-8">Ready to Build Your<br>Digital Presence?</h2>
-      <p class="body-lg mb-12" style="max-width:420px;margin-left:auto;margin-right:auto;">Tell us about your project. We will get back to you within 24 hours.</p>
-      <button class="btn-primary" onclick="navigate('contact')">Get in Touch</button>
+  <section class="sec tc">
+    <div class="wrap rv">
+      <span class="eyebrow">Let's Build Together</span>
+      <h2 class="sec-h" style="max-width:560px;margin:0 auto 24px;">Ready to Start Your<br><em>Digital Journey?</em></h2>
+      <p class="sec-body" style="max-width:400px;margin:0 auto 48px;">Tell us what you need. We'll get back to you within 24 hours.</p>
+      <button class="btn-p" onclick="go('contact')">Get in Touch</button>
     </div>
   </section>
 
-  <div class="divider"></div>
   <div id="footer-home"></div>
 </div>
 
 
-<!-- ============================================================
-     PAGE: SERVICES
-     ============================================================ -->
+<!-- ═══════════════════════════════════════════
+     AI LAB PAGE
+═══════════════════════════════════════════ -->
+<div id="page-lab" class="page">
+  <section class="page-hero">
+    <div class="grid-vfx"></div>
+    <div class="wrap" style="position:relative;z-index:1;">
+      <span class="eyebrow rv">AI Lab</span>
+      <h1 class="sec-h rv d1" style="font-size:clamp(36px,6vw,80px);font-weight:300;max-width:640px;margin:0 auto 24px;">
+        Where <em>Intelligence</em><br>Meets Craft
+      </h1>
+      <p class="sec-body rv d2" style="max-width:480px;margin:0 auto;">
+        Our laboratory for AI-powered tools — built for real businesses, not just demos.
+      </p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="lab-wrap">
+        <div class="lab-info">
+          <span class="eyebrow rv">Project 001</span>
+          <h2 class="lab-h rv d1"><em>Nadha</em> Business AI<br>Beta Download</h2>
+          <p class="lab-desc rv d2">An AI assistant trained to help small and medium businesses make smarter decisions — answering questions, analysing data, and automating routine tasks.</p>
+          <div class="lab-features rv d3">
+            <div class="lab-feat">Business Q&A powered by AI</div>
+            <div class="lab-feat">Customer engagement automation</div>
+            <div class="lab-feat">Simple dashboard — no coding needed</div>
+            <div class="lab-feat">Built for Kerala & Indian businesses</div>
+            <div class="lab-feat">Free during beta period</div>
+          </div>
+          <div class="download-zone rv d4">
+            <div class="download-label">Status</div>
+            <div class="download-name">Currently in Development</div>
+            <div class="download-meta">Beta release · Coming 2025 · Free access</div>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;">
+              <input type="email" id="lab-email" class="form-input" placeholder="your@email.com — we'll notify you">
+              <button class="btn-p" onclick="labWaitlist()" style="align-self:flex-start;">
+                Join the Waitlist
+              </button>
+              <div id="lab-ok" class="form-ok">You're on the list. We'll email you first when it launches.</div>
+            </div>
+          </div>
+        </div>
+        <div class="lab-visual rv d1" style="height:500px;">
+          <canvas id="ai-canvas-2"></canvas>
+          <div class="lab-badge">
+            <div class="lab-badge-dot"></div>
+            Building Now
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec-dark">
+    <div class="wrap">
+      <div class="tc rv" style="margin-bottom:60px;">
+        <span class="eyebrow">What's in the Pipeline</span>
+        <h2 class="sec-h">More Tools <em>Coming</em></h2>
+      </div>
+      <div class="grid3">
+        <div class="card rv d1">
+          <div class="badge-live" style="margin-bottom:20px;">Project 001</div>
+          <div class="card-h">Business AI Assistant</div>
+          <p class="card-b">AI-powered decision support and customer engagement for SMBs.</p>
+        </div>
+        <div class="card rv d2">
+          <div class="badge-soon" style="margin-bottom:20px;">Project 002</div>
+          <div class="card-h">Website Chatbot</div>
+          <p class="card-b">Embed a trained AI chatbot on any website — answers queries, captures leads.</p>
+        </div>
+        <div class="card rv d3">
+          <div class="badge-soon" style="margin-bottom:20px;">Project 003</div>
+          <div class="card-h">AI Content Studio</div>
+          <p class="card-b">Generate marketing content, social posts, and product descriptions instantly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-lab"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     SERVICES
+═══════════════════════════════════════════ -->
 <div id="page-services" class="page">
   <section class="page-hero">
-    <div class="grid-bg"></div>
-    <div class="container page-hero-inner">
-      <div class="eyebrow reveal">Services</div>
-      <h1 class="display-hl reveal d1" style="max-width:620px;margin:0 auto 24px;">Digital Services for Growing Businesses</h1>
-      <p class="body-lg reveal d2" style="max-width:480px;margin:0 auto;">We design and build websites, online stores, and digital products — handling every project with care from start to finish.</p>
-    </div>
-  </section>
-  <div class="divider"></div>
-
-  <!-- Core Services -->
-  <section>
-    <div class="container">
-      <div class="text-center mb-12 reveal">
-        <div class="eyebrow">What We Build</div>
-        <h2 class="section-hl">Our Core Services</h2>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:20px;">
-
-        <div class="card reveal">
-          <div class="service-row">
-            <div>
-              <div class="pillar-num">01</div>
-              <h3 style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--text-1);line-height:1.2;">Business Websites</h3>
-            </div>
-            <div>
-              <p class="body-md" style="margin-bottom:20px;">A professional website is the foundation of any business online. We build clean, fast, and mobile-friendly websites that represent your brand the right way.</p>
-              <div class="course-topics">
-                <span class="topic-pill">Responsive Design</span>
-                <span class="topic-pill">SEO-Ready</span>
-                <span class="topic-pill">Fast Loading</span>
-                <span class="topic-pill">CMS Integration</span>
-                <span class="topic-pill">Contact Forms</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card reveal d1">
-          <div class="service-row">
-            <div>
-              <div class="pillar-num">02</div>
-              <h3 style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--text-1);line-height:1.2;">E-Commerce Stores</h3>
-            </div>
-            <div>
-              <p class="body-md" style="margin-bottom:20px;">We build online stores that are easy to manage and built to sell — covering the full flow from product listings to checkout.</p>
-              <div class="course-topics">
-                <span class="topic-pill">Payment Integration</span>
-                <span class="topic-pill">Product Management</span>
-                <span class="topic-pill">Order Tracking</span>
-                <span class="topic-pill">Mobile-First</span>
-                <span class="topic-pill">Secure Checkout</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card reveal d2">
-          <div class="service-row">
-            <div>
-              <div class="pillar-num">03</div>
-              <h3 style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--text-1);line-height:1.2;">Landing Pages</h3>
-            </div>
-            <div>
-              <p class="body-md" style="margin-bottom:20px;">Need a focused page for a campaign, product launch, or lead generation? We design landing pages built around one goal — converting visitors.</p>
-              <div class="course-topics">
-                <span class="topic-pill">Conversion-Focused</span>
-                <span class="topic-pill">Analytics Integrated</span>
-                <span class="topic-pill">Fast Turnaround</span>
-                <span class="topic-pill">A/B Testing Ready</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card reveal d3">
-          <div class="service-row">
-            <div>
-              <div class="pillar-num">04</div>
-              <h3 style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--text-1);line-height:1.2;">UI/UX Design</h3>
-            </div>
-            <div>
-              <p class="body-md" style="margin-bottom:20px;">Good design is about how something works, not just how it looks. We design interfaces that are intuitive, consistent, and pleasant to use.</p>
-              <div class="course-topics">
-                <span class="topic-pill">Wireframing</span>
-                <span class="topic-pill">Prototyping</span>
-                <span class="topic-pill">Style Guides</span>
-                <span class="topic-pill">User Flows</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
+    <div class="grid-vfx"></div>
+    <div class="wrap" style="position:relative;z-index:1;text-align:center;">
+      <span class="eyebrow rv">Services</span>
+      <h1 class="sec-h rv d1" style="font-size:clamp(36px,6vw,80px);max-width:620px;margin:0 auto 24px;">
+        Digital Work Built<br>to <em>Last</em>
+      </h1>
+      <p class="sec-body rv d2" style="max-width:460px;margin:0 auto;">Every project handled with care — from first conversation to final launch.</p>
     </div>
   </section>
 
-  <div class="divider"></div>
-
-  <!-- Process -->
-  <section style="background:var(--bg-2);">
-    <div class="container">
-      <div class="text-center mb-12 reveal">
-        <div class="eyebrow">How We Work</div>
-        <h2 class="section-hl">A Simple, Clear Process</h2>
-      </div>
-      <div class="process-list reveal">
-        <div class="process-item">
-          <div class="process-num">01</div>
+  <section class="sec">
+    <div class="wrap">
+      <div style="display:flex;flex-direction:column;gap:1px;background:var(--border);">
+        <div class="card rv" style="display:grid;grid-template-columns:200px 1fr;gap:48px;padding:48px;background:var(--ink-2);">
+          <div><div class="card-num">01</div><div class="card-h">Business Websites</div></div>
           <div>
-            <div class="process-title">Discovery</div>
-            <p class="body-md">We start by understanding your business, goals, and audience. No assumptions — just a clear picture of what needs to be built and why.</p>
+            <p class="card-b" style="margin-bottom:20px;">Professional websites tailored to your brand — mobile-friendly, fast-loading, and optimised to convert visitors into customers.</p>
+            <div class="pill-wrap"><span class="pill">Responsive Design</span><span class="pill">SEO-Ready</span><span class="pill">Fast Load</span><span class="pill">CMS Integration</span><span class="pill">Contact Forms</span></div>
           </div>
         </div>
-        <div class="process-item">
-          <div class="process-num">02</div>
+        <div class="card rv d1" style="display:grid;grid-template-columns:200px 1fr;gap:48px;padding:48px;background:var(--ink-2);">
+          <div><div class="card-num">02</div><div class="card-h">E-Commerce Stores</div></div>
           <div>
-            <div class="process-title">Design</div>
-            <p class="body-md">We create a design that reflects your brand and communicates clearly to your audience. You review and approve before anything gets built.</p>
+            <p class="card-b" style="margin-bottom:20px;">Full online store builds — from product listings to secure checkout, payment integration, and order management.</p>
+            <div class="pill-wrap"><span class="pill">Payment Gateway</span><span class="pill">Inventory</span><span class="pill">Order Tracking</span><span class="pill">Mobile-First</span><span class="pill">Secure</span></div>
           </div>
         </div>
-        <div class="process-item">
-          <div class="process-num">03</div>
+        <div class="card rv d2" style="display:grid;grid-template-columns:200px 1fr;gap:48px;padding:48px;background:var(--ink-2);">
+          <div><div class="card-num">03</div><div class="card-h">Landing Pages</div></div>
           <div>
-            <div class="process-title">Development</div>
-            <p class="body-md">We build your project with clean code, tested across devices and browsers. You receive regular updates throughout.</p>
+            <p class="card-b" style="margin-bottom:20px;">High-converting single-page sites for campaigns, product launches, and lead generation — focused on one goal.</p>
+            <div class="pill-wrap"><span class="pill">Conversion-First</span><span class="pill">Analytics</span><span class="pill">Fast Turnaround</span><span class="pill">A/B Ready</span></div>
           </div>
         </div>
-        <div class="process-item">
-          <div class="process-num">04</div>
+        <div class="card rv d3" style="display:grid;grid-template-columns:200px 1fr;gap:48px;padding:48px;background:var(--ink-2);">
+          <div><div class="card-num">04</div><div class="card-h">UI/UX Design</div></div>
           <div>
-            <div class="process-title">Launch &amp; Support</div>
-            <p class="body-md">We handle the launch and remain available for questions and fixes after delivery. You are never left on your own.</p>
+            <p class="card-b" style="margin-bottom:20px;">Intuitive, consistent interfaces that are as functional as they are beautiful — from wireframes to polished prototypes.</p>
+            <div class="pill-wrap"><span class="pill">Wireframing</span><span class="pill">Prototyping</span><span class="pill">Style Guides</span><span class="pill">User Flows</span></div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="divider"></div>
-
-  <section>
-    <div class="container text-center reveal">
-      <h2 class="section-hl mb-8">Have a Project in Mind?</h2>
-      <p class="body-lg mb-12" style="max-width:400px;margin-left:auto;margin-right:auto;">We would love to hear about it. Reach out and let's talk.</p>
-      <button class="btn-primary" onclick="navigate('contact')">Start a Conversation</button>
+  <section class="sec sec-dark">
+    <div class="wrap tc rv" style="margin-bottom:60px;">
+      <span class="eyebrow">Our Process</span>
+      <h2 class="sec-h">How We Work</h2>
+    </div>
+    <div class="wrap">
+      <div class="process">
+        <div class="proc rv"><div class="proc-n">01</div><div><div class="proc-h">Discovery</div><p class="proc-b">We understand your business, audience, and goals before writing a single line of code.</p></div></div>
+        <div class="proc rv d1"><div class="proc-n">02</div><div><div class="proc-h">Design</div><p class="proc-b">We create a design that reflects your brand. You review and approve before anything gets built.</p></div></div>
+        <div class="proc rv d2"><div class="proc-n">03</div><div><div class="proc-h">Development</div><p class="proc-b">Clean code, tested across devices and browsers. Regular updates throughout.</p></div></div>
+        <div class="proc rv d3"><div class="proc-n">04</div><div><div class="proc-h">Launch & Support</div><p class="proc-b">We handle the launch and stay available after delivery. You're never left alone.</p></div></div>
+      </div>
     </div>
   </section>
 
-  <div class="divider"></div>
+  <section class="sec tc">
+    <div class="wrap rv">
+      <h2 class="sec-h" style="max-width:500px;margin:0 auto 20px;">Have a Project<br>in <em>Mind?</em></h2>
+      <p class="sec-body" style="margin-bottom:48px;">Let's talk about what you need.</p>
+      <button class="btn-p" onclick="go('contact')">Start a Conversation</button>
+    </div>
+  </section>
+
   <div id="footer-services"></div>
 </div>
 
 
-<!-- ============================================================
-     PAGE: COURSES
-     ============================================================ -->
+<!-- ═══════════════════════════════════════════
+     COURSES
+═══════════════════════════════════════════ -->
 <div id="page-courses" class="page">
   <section class="page-hero">
-    <div class="grid-bg"></div>
-    <div class="container page-hero-inner">
-      <div class="eyebrow reveal">Courses</div>
-      <h1 class="display-hl reveal d1" style="max-width:620px;margin:0 auto 24px;">Practical Tech Skills<br>for Real Learners</h1>
-      <p class="body-lg reveal d2" style="max-width:480px;margin:0 auto;">Hands-on, project-based courses in programming and web development. No theory overload — just skills you can actually use.</p>
+    <div class="grid-vfx"></div>
+    <div class="wrap" style="position:relative;z-index:1;text-align:center;">
+      <span class="eyebrow rv">Courses</span>
+      <h1 class="sec-h rv d1" style="font-size:clamp(36px,6vw,80px);max-width:620px;margin:0 auto 24px;">
+        Practical Skills.<br><em>Real Results.</em>
+      </h1>
+      <p class="sec-body rv d2" style="max-width:460px;margin:0 auto;">Project-based tech courses for students and young learners — no theory overload.</p>
     </div>
   </section>
-  <div class="divider"></div>
 
-  <!-- Active Courses -->
-  <section>
-    <div class="container">
-      <div class="text-center mb-12 reveal">
-        <div class="eyebrow">Currently Running</div>
-        <h2 class="section-hl">Active Courses</h2>
+  <section class="sec">
+    <div class="wrap">
+      <div class="tc rv" style="margin-bottom:60px;">
+        <span class="eyebrow">Currently Running</span>
+        <h2 class="sec-h">Active Courses</h2>
       </div>
-      <div class="g2">
-        <div class="course-card reveal d1">
+      <div class="grid2">
+        <div class="course-card rv d1">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
-            <h3 style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--text-1);">Python Programming</h3>
-            <div class="badge badge-live">Active</div>
+            <div class="c-h">Python Programming</div>
+            <div class="badge-live">Active</div>
           </div>
-          <div class="course-duration">4 Weeks · Beginner to Intermediate</div>
-          <p class="body-md">Learn Python from scratch through real exercises and projects. Covers variables, functions, loops, file handling, and an introduction to data concepts.</p>
-          <div class="course-topics">
-            <span class="topic-pill">Python Basics</span>
-            <span class="topic-pill">Functions &amp; Loops</span>
-            <span class="topic-pill">File Handling</span>
-            <span class="topic-pill">Mini Projects</span>
-          </div>
-          <button class="btn-primary" style="margin-top:8px;align-self:flex-start;" onclick="navigate('contact')">Register Now</button>
+          <div class="c-dur">4 Weeks · Beginner to Intermediate</div>
+          <p class="card-b">Variables, functions, loops, file handling, and real mini-projects. Learn Python by building things.</p>
+          <div class="pill-wrap"><span class="pill">Python Basics</span><span class="pill">Functions</span><span class="pill">File Handling</span><span class="pill">Projects</span></div>
+          <button class="btn-p" style="align-self:flex-start;margin-top:8px;" onclick="go('contact')">Register Now</button>
         </div>
-        <div class="course-card reveal d2">
+        <div class="course-card rv d2">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
-            <h3 style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--text-1);">Web Development</h3>
-            <div class="badge badge-live">Active</div>
+            <div class="c-h">Web Development</div>
+            <div class="badge-live">Active</div>
           </div>
-          <div class="course-duration">4 Weeks · Beginner Friendly</div>
-          <p class="body-md">Build real websites from the ground up. Covers HTML, CSS, and JavaScript — everything you need to design and publish your first website.</p>
-          <div class="course-topics">
-            <span class="topic-pill">HTML &amp; CSS</span>
-            <span class="topic-pill">JavaScript</span>
-            <span class="topic-pill">Responsive Design</span>
-            <span class="topic-pill">Live Project</span>
-          </div>
-          <button class="btn-primary" style="margin-top:8px;align-self:flex-start;" onclick="navigate('contact')">Register Now</button>
+          <div class="c-dur">4 Weeks · Beginner Friendly</div>
+          <p class="card-b">HTML, CSS, JavaScript — build and publish your first real website from scratch.</p>
+          <div class="pill-wrap"><span class="pill">HTML & CSS</span><span class="pill">JavaScript</span><span class="pill">Responsive</span><span class="pill">Live Project</span></div>
+          <button class="btn-p" style="align-self:flex-start;margin-top:8px;" onclick="go('contact')">Register Now</button>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="divider"></div>
-
-  <!-- Coming Soon -->
-  <section style="background:var(--bg-2);">
-    <div class="container">
-      <div class="text-center mb-12 reveal">
-        <div class="eyebrow">Coming Soon</div>
-        <h2 class="section-hl">More Courses on the Way</h2>
+  <section class="sec sec-dark">
+    <div class="wrap">
+      <div class="tc rv" style="margin-bottom:60px;">
+        <span class="eyebrow">Coming Soon</span>
+        <h2 class="sec-h">More on the Way</h2>
       </div>
-      <div class="g3">
-        <div class="card reveal d1" style="padding:28px;">
-          <div class="badge badge-soon" style="margin-bottom:16px;">Coming Soon</div>
-          <h4 style="font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--text-1);margin-bottom:8px;">Data Analytics</h4>
-          <p class="body-md" style="font-size:14px;">Working with data, spreadsheets, and basic visualisation tools.</p>
-        </div>
-        <div class="card reveal d2" style="padding:28px;">
-          <div class="badge badge-soon" style="margin-bottom:16px;">Coming Soon</div>
-          <h4 style="font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--text-1);margin-bottom:8px;">Cybersecurity Basics</h4>
-          <p class="body-md" style="font-size:14px;">Understanding online safety, threats, and fundamental security practices.</p>
-        </div>
-        <div class="card reveal d3" style="padding:28px;">
-          <div class="badge badge-soon" style="margin-bottom:16px;">Coming Soon</div>
-          <h4 style="font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--text-1);margin-bottom:8px;">AI Fundamentals</h4>
-          <p class="body-md" style="font-size:14px;">What AI actually is, how it works, and how to use it practically.</p>
-        </div>
+      <div class="grid3">
+        <div class="card rv d1"><div class="badge-soon" style="margin-bottom:16px;">Soon</div><div class="card-h">Data Analytics</div><p class="card-b">Spreadsheets, data tools, and basic visualisation.</p></div>
+        <div class="card rv d2"><div class="badge-soon" style="margin-bottom:16px;">Soon</div><div class="card-h">Cybersecurity Basics</div><p class="card-b">Online safety, threats, and fundamental security practices.</p></div>
+        <div class="card rv d3"><div class="badge-soon" style="margin-bottom:16px;">Soon</div><div class="card-h">AI Fundamentals</div><p class="card-b">What AI actually is, how it works, and how to use it.</p></div>
       </div>
     </div>
   </section>
 
-  <div class="divider"></div>
-
-  <section>
-    <div class="container text-center reveal">
-      <h2 class="section-hl mb-8">Interested in a Course?</h2>
-      <p class="body-lg mb-12" style="max-width:400px;margin-left:auto;margin-right:auto;">Reach out and we will share schedule, batch details, and fees.</p>
-      <button class="btn-primary" onclick="navigate('contact')">Enquire Now</button>
+  <section class="sec tc">
+    <div class="wrap rv">
+      <h2 class="sec-h" style="margin-bottom:20px;">Interested in a <em>Course?</em></h2>
+      <p class="sec-body" style="margin-bottom:48px;">We'll share schedule, batch details, and fees.</p>
+      <button class="btn-p" onclick="go('contact')">Enquire Now</button>
     </div>
   </section>
 
-  <div class="divider"></div>
   <div id="footer-courses"></div>
 </div>
 
 
-<!-- ============================================================
-     PAGE: ABOUT
-     ============================================================ -->
+<!-- ═══════════════════════════════════════════
+     ABOUT
+═══════════════════════════════════════════ -->
 <div id="page-about" class="page">
   <section class="page-hero">
-    <div class="grid-bg"></div>
-    <div class="container page-hero-inner">
-      <div class="eyebrow reveal">About</div>
-      <h1 class="display-hl reveal d1" style="max-width:580px;margin:0 auto 24px;">A Studio Built on Craft<br>and Honest Work</h1>
-      <p class="body-lg reveal d2" style="max-width:460px;margin:0 auto;">Nadha Labs is a digital studio based in Kottiyam, Kollam, Kerala — building websites and running tech courses for students and businesses.</p>
-    </div>
-  </section>
-  <div class="divider"></div>
-
-  <section style="background:var(--bg-2);">
-    <div class="container-narrow">
-      <div class="eyebrow reveal">Who We Are</div>
-      <h2 class="section-hl reveal d1 mb-8">Started Small.<br>Building With Intention.</h2>
-      <p class="body-lg reveal d2 mb-8">Nadha Labs was started with a straightforward belief — good digital work should be accessible to businesses of every size, not just large companies with large budgets.</p>
-      <p class="body-md reveal d3 mb-8">We are at an early stage, building our track record and working with businesses that want a serious digital partner. Our focus right now is web development and digital services, funded by the client work we do.</p>
-      <p class="body-md reveal d4">In parallel, we run tech training courses for students — Python, web development, and more — because we believe practical skills education matters just as much as building products.</p>
+    <div class="grid-vfx"></div>
+    <div class="wrap" style="position:relative;z-index:1;text-align:center;">
+      <span class="eyebrow rv">About</span>
+      <h1 class="sec-h rv d1" style="font-size:clamp(36px,6vw,80px);max-width:620px;margin:0 auto 24px;">
+        Built on Craft.<br><em>Honest Work.</em>
+      </h1>
+      <p class="sec-body rv d2" style="max-width:460px;margin:0 auto;">A digital studio from Kottiyam, Kollam, Kerala — building websites, AI tools, and running tech courses.</p>
     </div>
   </section>
 
-  <div class="divider"></div>
-
-  <section>
-    <div class="container">
-      <div class="text-center mb-12 reveal">
-        <div class="eyebrow">The Road Ahead</div>
-        <h2 class="section-hl">Where We Are Headed</h2>
-      </div>
-      <div class="process-list reveal">
-        <div class="process-item">
-          <div class="process-num" style="color:var(--text-1);font-weight:600;">Now</div>
-          <div>
-            <div class="process-title">Web Development &amp; Digital Services</div>
-            <p class="body-md">Taking on client projects — websites, e-commerce, landing pages, and UI/UX. Building our track record and funding what comes next.</p>
-          </div>
+  <section class="sec sec-dark">
+    <div class="wrap">
+      <div class="about-split">
+        <div class="rv">
+          <span class="eyebrow">Who We Are</span>
+          <h2 class="sec-h">Started Small.<br><em>Building</em> With Intention.</h2>
+          <p class="sec-body" style="margin-bottom:20px;">Nadha Labs was built on a simple belief — good digital work should be accessible to every business, not just those with big budgets.</p>
+          <p class="sec-body">We're at an early stage, building our track record with clients who want a serious partner. Web development funds us today while we build AI tools for tomorrow. In parallel, we train the next generation through our tech courses.</p>
         </div>
-        <div class="process-item">
-          <div class="process-num">Next</div>
-          <div>
-            <div class="process-title">Mobile App Development</div>
-            <p class="body-md">Expanding into app development in the months ahead — starting with projects for existing and new clients.</p>
-          </div>
-        </div>
-        <div class="process-item">
-          <div class="process-num">Later</div>
-          <div>
-            <div class="process-title">AI-Powered Tools</div>
-            <p class="body-md">Building AI tools and integrations for businesses — a natural extension of the software work we are doing now.</p>
-          </div>
+        <div class="rv d1">
+          <div class="about-stat"><div class="stat-n"><em>2</em></div><div class="stat-l">Active Courses Running</div></div>
+          <div class="about-stat"><div class="stat-n">4</div><div class="stat-l">Core Services Offered</div></div>
+          <div class="about-stat"><div class="stat-n"><em>3</em></div><div class="stat-l">AI Tools in Development</div></div>
+          <div class="about-stat"><div class="stat-n">∞</div><div class="stat-l">Ambition</div></div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="divider"></div>
-
-  <section style="background:var(--bg-2);">
-    <div class="container text-center reveal">
-      <h2 class="section-hl mb-8">Work With Us</h2>
-      <p class="body-lg mb-12" style="max-width:420px;margin-left:auto;margin-right:auto;">We are looking for clients who want thoughtful, quality digital work. If that sounds like you, get in touch.</p>
-      <button class="btn-primary" onclick="navigate('contact')">Contact Us</button>
+  <section class="sec">
+    <div class="wrap">
+      <div class="tc rv" style="margin-bottom:60px;">
+        <span class="eyebrow">Roadmap</span>
+        <h2 class="sec-h">Where We're <em>Headed</em></h2>
+      </div>
+      <div class="process rv">
+        <div class="proc"><div class="proc-n" style="color:var(--silver-1);font-weight:600;">Now</div><div><div class="proc-h">Web Development & Services</div><p class="proc-b">Taking on client projects — websites, e-commerce, landing pages, UI/UX. Building track record and funding what comes next.</p></div></div>
+        <div class="proc"><div class="proc-n">Next</div><div><div class="proc-h">AI Tools Launch</div><p class="proc-b">Releasing the first Nadha AI tool — a business assistant for SMBs. Beta access free for early registrants.</p></div></div>
+        <div class="proc"><div class="proc-n">Next</div><div><div class="proc-h">Mobile App Development</div><p class="proc-b">Expanding into app development for existing and new clients.</p></div></div>
+        <div class="proc"><div class="proc-n">Later</div><div><div class="proc-h">AI Platform</div><p class="proc-b">A suite of AI-powered tools built for Indian businesses — scalable, affordable, powerful.</p></div></div>
+      </div>
     </div>
   </section>
 
-  <div class="divider"></div>
+  <section class="sec sec-dark tc">
+    <div class="wrap rv">
+      <h2 class="sec-h" style="margin-bottom:20px;">Work With <em>Us</em></h2>
+      <p class="sec-body" style="margin-bottom:48px;max-width:400px;margin-left:auto;margin-right:auto;">We want clients who care about quality. If that sounds like you, reach out.</p>
+      <button class="btn-p" onclick="go('contact')">Contact Us</button>
+    </div>
+  </section>
+
   <div id="footer-about"></div>
 </div>
 
 
-<!-- ============================================================
-     PAGE: CONTACT
-     ============================================================ -->
+<!-- ═══════════════════════════════════════════
+     CONTACT
+═══════════════════════════════════════════ -->
 <div id="page-contact" class="page">
   <section class="page-hero" style="padding-bottom:40px;">
-    <div class="grid-bg"></div>
-    <div class="container page-hero-inner">
-      <div class="eyebrow reveal">Contact</div>
-      <h1 class="display-hl reveal d1" style="max-width:500px;margin:0 auto 24px;">Let's Talk</h1>
-      <p class="body-lg reveal d2" style="max-width:420px;margin:0 auto;">Whether it's a web project or a course enquiry, we respond to every message personally.</p>
+    <div class="grid-vfx"></div>
+    <div class="wrap" style="position:relative;z-index:1;text-align:center;">
+      <span class="eyebrow rv">Contact</span>
+      <h1 class="sec-h rv d1" style="font-size:clamp(36px,6vw,80px);max-width:480px;margin:0 auto 20px;">Let's <em>Talk</em></h1>
+      <p class="sec-body rv d2" style="max-width:380px;margin:0 auto;">Every message answered personally. Typical response within 24 hours.</p>
     </div>
   </section>
-  <div class="divider"></div>
 
-  <section>
-    <div class="container">
-      <div class="g2" style="gap:60px;align-items:start;">
-
-        <!-- Form -->
-        <div class="reveal">
+  <section class="sec">
+    <div class="wrap">
+      <div class="contact-grid">
+        <div class="rv">
           <div class="tab-bar">
-            <button class="tab-btn active" onclick="switchTab('project', this)">Project Enquiry</button>
-            <button class="tab-btn" onclick="switchTab('course', this)">Course Registration</button>
+            <button class="tab-btn on" onclick="switchTab('project',this)">Project Enquiry</button>
+            <button class="tab-btn" onclick="switchTab('course',this)">Course Registration</button>
           </div>
-
-          <!-- Project Enquiry -->
-          <div id="tab-project" class="tab-pane active">
-            <div class="form-field">
-              <label>Name *</label>
-              <input type="text" class="form-input" id="proj-name" placeholder="Your full name">
-            </div>
-            <div class="form-field">
-              <label>Email *</label>
-              <input type="email" class="form-input" id="proj-email" placeholder="your@email.com">
-            </div>
-            <div class="form-field">
-              <label>Phone</label>
-              <input type="tel" class="form-input" id="proj-phone" placeholder="+91 XXXXX XXXXX">
-            </div>
-            <div class="form-field">
-              <label>Service *</label>
-              <select class="form-select" id="proj-service">
+          <div id="tab-project" class="tab-pane on">
+            <div class="form-field"><label class="form-label">Name *</label><input type="text" class="form-input" id="pn" placeholder="Your full name"></div>
+            <div class="form-field"><label class="form-label">Email *</label><input type="email" class="form-input" id="pe" placeholder="your@email.com"></div>
+            <div class="form-field"><label class="form-label">Phone</label><input type="tel" class="form-input" id="pp" placeholder="+91 XXXXX XXXXX"></div>
+            <div class="form-field"><label class="form-label">Service *</label>
+              <select class="form-select" id="ps">
                 <option value="">Select a service</option>
                 <option>Business Website</option>
                 <option>E-Commerce Store</option>
                 <option>Landing Page</option>
                 <option>UI/UX Design</option>
+                <option>AI Tool / Chatbot</option>
                 <option>Not sure yet</option>
               </select>
             </div>
-            <div class="form-field">
-              <label>Tell Us About Your Project *</label>
-              <textarea class="form-textarea" id="proj-message" placeholder="Describe what you need. The more detail, the better."></textarea>
-            </div>
-            <button class="btn-primary" id="proj-btn" onclick="submitProject()">Send Enquiry</button>
-            <div id="proj-success" class="form-success">Thanks! We will get back to you within 24 hours.</div>
-            <div id="proj-error" class="form-error"></div>
+            <div class="form-field"><label class="form-label">Tell Us About Your Project *</label><textarea class="form-textarea" id="pm" placeholder="The more detail, the better."></textarea></div>
+            <button class="btn-p" id="pb" onclick="sendProject()">Send Enquiry</button>
+            <div id="p-ok" class="form-ok">Sent. We'll reply within 24 hours.</div>
+            <div id="p-err" class="form-err"></div>
           </div>
-
-          <!-- Course Registration -->
           <div id="tab-course" class="tab-pane">
-            <div class="form-field">
-              <label>Name *</label>
-              <input type="text" class="form-input" id="crs-name" placeholder="Your full name">
-            </div>
-            <div class="form-field">
-              <label>Email *</label>
-              <input type="email" class="form-input" id="crs-email" placeholder="your@email.com">
-            </div>
-            <div class="form-field">
-              <label>Phone</label>
-              <input type="tel" class="form-input" id="crs-phone" placeholder="+91 XXXXX XXXXX">
-            </div>
-            <div class="form-field">
-              <label>Course *</label>
-              <select class="form-select" id="crs-course">
+            <div class="form-field"><label class="form-label">Name *</label><input type="text" class="form-input" id="cn" placeholder="Your full name"></div>
+            <div class="form-field"><label class="form-label">Email *</label><input type="email" class="form-input" id="ce" placeholder="your@email.com"></div>
+            <div class="form-field"><label class="form-label">Phone</label><input type="tel" class="form-input" id="cp" placeholder="+91 XXXXX XXXXX"></div>
+            <div class="form-field"><label class="form-label">Course *</label>
+              <select class="form-select" id="cc">
                 <option value="">Select a course</option>
                 <option>Python Programming</option>
                 <option>Web Development</option>
                 <option>Notify me about upcoming courses</option>
               </select>
             </div>
-            <div class="form-field">
-              <label>Message (Optional)</label>
-              <textarea class="form-textarea" id="crs-message" placeholder="Any questions about the course, schedule, or fees?" style="min-height:100px;"></textarea>
-            </div>
-            <button class="btn-primary" id="crs-btn" onclick="submitCourse()">Register Interest</button>
-            <div id="crs-success" class="form-success">Registered! We will send you the course details shortly.</div>
-            <div id="crs-error" class="form-error"></div>
+            <div class="form-field"><label class="form-label">Message (Optional)</label><textarea class="form-textarea" id="cm" placeholder="Questions about schedule or fees?" style="min-height:100px;"></textarea></div>
+            <button class="btn-p" id="cb" onclick="sendCourse()">Register Interest</button>
+            <div id="c-ok" class="form-ok">Registered. We'll send course details soon.</div>
+            <div id="c-err" class="form-err"></div>
           </div>
         </div>
-
-        <!-- Direct Contact Info -->
-        <div class="reveal d1">
-          <div class="eyebrow mb-8">Direct Contact</div>
-          <div class="contact-info">
-            <div class="contact-row">
-              <div class="contact-label">Phone</div>
-              <a href="tel:+919074496153" class="contact-value">+91 90744 96153</a>
-            </div>
-            <div class="contact-row">
-              <div class="contact-label">Email</div>
-              <a href="mailto:nadhalabs@gmail.com" class="contact-value">nadhalabs@gmail.com</a>
-            </div>
-            <div class="contact-row">
-              <div class="contact-label">Alt Email</div>
-              <a href="mailto:nadhagroups@gmail.com" class="contact-value">nadhagroups@gmail.com</a>
-            </div>
-            <div class="contact-row">
-              <div class="contact-label">Location</div>
-              <div class="contact-value">Kottiyam, Kollam, Kerala</div>
-            </div>
+        <div class="rv d1">
+          <span class="eyebrow" style="margin-bottom:24px;">Direct Contact</span>
+          <div class="c-info">
+            <div class="c-row"><div class="c-lbl">Phone</div><a href="tel:+919074496153" class="c-val">+91 90744 96153</a></div>
+            <div class="c-row"><div class="c-lbl">Email</div><a href="mailto:nadhalabs@gmail.com" class="c-val">nadhalabs@gmail.com</a></div>
+            <div class="c-row"><div class="c-lbl">Alt</div><a href="mailto:nadhagroups@gmail.com" class="c-val">nadhagroups@gmail.com</a></div>
+            <div class="c-row"><div class="c-lbl">Location</div><div class="c-val">Kottiyam, Kollam, Kerala</div></div>
           </div>
-          <div style="margin-top:28px;padding:22px 24px;border:1px solid var(--border);border-radius:4px;">
-            <p style="font-size:13px;color:var(--text-3);line-height:1.8;">We respond to every enquiry personally. Typical response time is within 24 hours on working days.</p>
+          <div style="margin-top:32px;padding:24px;border:1px solid var(--border);">
+            <p style="font-size:13px;font-weight:300;color:var(--silver-3);line-height:1.9;">We respond to every message personally. Response time within 24 hours on working days.</p>
           </div>
         </div>
-
       </div>
     </div>
   </section>
 
-  <div class="divider"></div>
   <div id="footer-contact"></div>
 </div>
 
 
-<!-- ============================================================
-     PAGE: LEGAL
-     ============================================================ -->
+<!-- ═══════════════════════════════════════════
+     LEGAL
+═══════════════════════════════════════════ -->
 <div id="page-legal" class="page">
   <section style="padding:160px 0 80px;">
-    <div class="container-narrow">
-      <div class="eyebrow reveal" style="margin-bottom:16px;">Legal</div>
-      <h1 class="display-hl reveal d1" style="margin-bottom:48px;">Privacy &amp; Terms</h1>
-      <div class="reveal d2" style="display:flex;flex-direction:column;gap:36px;">
+    <div class="wrap-n">
+      <span class="eyebrow rv">Legal</span>
+      <h1 class="sec-h rv d1" style="font-size:clamp(32px,5vw,64px);margin-bottom:48px;">Privacy &<br><em>Terms</em></h1>
+      <div class="rv d2" style="display:flex;flex-direction:column;gap:36px;">
         <div>
-          <h2 style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text-1);margin-bottom:14px;">Privacy Policy</h2>
-          <p class="body-md" style="margin-bottom:14px;">Nadha Labs collects only the information you provide through our contact and registration forms — your name, email address, phone number, and message. We use this information solely to respond to your enquiry and to send relevant updates with your consent.</p>
-          <p class="body-md">We do not sell, share, or misuse your personal data. We may use cookies to improve site functionality. You can disable cookies through your browser settings at any time.</p>
+          <div class="legal-h">Privacy Policy</div>
+          <p class="legal-p">Nadha Labs collects only the information you provide through our contact and registration forms — name, email, phone, and message. We use this solely to respond to your enquiry and send relevant updates with your consent.</p>
+          <p class="legal-p">We do not sell, share, or misuse your personal data. Cookies may be used to improve site functionality and can be disabled via your browser settings.</p>
         </div>
-        <div class="divider-grad"></div>
+        <div class="divider"></div>
         <div>
-          <h2 style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text-1);margin-bottom:14px;">Terms of Service</h2>
-          <p class="body-md" style="margin-bottom:14px;">By using this website, you agree to use it only for lawful purposes. The content on this site is the property of Nadha Labs and may not be reproduced without written permission.</p>
-          <p class="body-md">Nadha Labs is not liable for any indirect or consequential damages arising from use of this website or our services. These terms are governed by applicable Indian law.</p>
+          <div class="legal-h">Terms of Service</div>
+          <p class="legal-p">By using this website, you agree to use it only for lawful purposes. Content on this site is the property of Nadha Labs and may not be reproduced without written permission.</p>
+          <p class="legal-p">Nadha Labs is not liable for indirect or consequential damages arising from use of this website or services. These terms are governed by applicable Indian law.</p>
         </div>
-        <div class="divider-grad"></div>
+        <div class="divider"></div>
         <div>
-          <h2 style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--text-1);margin-bottom:14px;">Questions?</h2>
-          <p class="body-md">For any legal or privacy questions, email us at <a href="mailto:nadhalabs@gmail.com" style="color:var(--text-1);text-decoration:underline;">nadhalabs@gmail.com</a></p>
+          <div class="legal-h">Questions?</div>
+          <p class="legal-p">Email us at <a href="mailto:nadhalabs@gmail.com" style="color:var(--silver-1);text-decoration:underline;">nadhalabs@gmail.com</a></p>
         </div>
       </div>
     </div>
   </section>
-  <div class="divider"></div>
   <div id="footer-legal"></div>
 </div>
 
 
-<!-- COOKIE BANNER -->
-<div id="cookie-banner">
-  <p class="cookie-text">We use cookies to improve your experience. Your data is never sold.</p>
-  <div class="cookie-btns">
-    <button class="c-btn c-accept" onclick="closeCookie()">Accept</button>
-  </div>
+<!-- COOKIE -->
+<div id="cookie">
+  <p class="ck-text">We use cookies to improve your experience. Your data is never sold.</p>
+  <div><button class="ck-btn" onclick="closeCookie()">Accept</button></div>
 </div>
-
 
 <!-- FOOTER TEMPLATE -->
 <template id="ftpl">
 <footer>
-  <div class="container" style="position:relative;z-index:1;">
-    <div class="footer-grid">
+  <div class="wrap">
+    <div class="footer-top">
       <div>
-        <div class="logo-full" style="margin-bottom:16px;">
-          <img src="logo.png" alt="Nadha Labs" class="logo-img" style="height:34px;width:34px;" onerror="this.style.display='none'">
-          <span class="logo-wordmark" style="font-size:16px;">NADHA <span>LABS</span></span>
-        </div>
-        <p class="footer-tagline">Web development &amp; digital services.<br>Based in Kottiyam, Kollam, Kerala.</p>
-        <p class="footer-tagline" style="margin-top:16px;font-family:var(--font-mono);font-size:11px;color:var(--text-3);">nadhalabs@gmail.com<br>+91 90744 96153</p>
+        <span class="f-brand">Nadha Labs</span>
+        <p class="f-tag">Web development, AI tools &<br>tech courses — from Kerala, for the world.</p>
+        <p class="f-tag" style="margin-top:16px;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;">nadhalabs@gmail.com<br>+91 90744 96153</p>
       </div>
       <div>
-        <div class="footer-col-title">Navigate</div>
-        <div class="footer-links">
-          <button class="footer-link" onclick="navigate('home')">Home</button>
-          <button class="footer-link" onclick="navigate('services')">Services</button>
-          <button class="footer-link" onclick="navigate('courses')">Courses</button>
-          <button class="footer-link" onclick="navigate('about')">About</button>
-          <button class="footer-link" onclick="navigate('contact')">Contact</button>
+        <div class="f-col-h">Navigate</div>
+        <div class="f-links">
+          <button class="f-lnk" onclick="go('home')">Home</button>
+          <button class="f-lnk" onclick="go('services')">Services</button>
+          <button class="f-lnk" onclick="go('lab')">AI Lab</button>
+          <button class="f-lnk" onclick="go('courses')">Courses</button>
+          <button class="f-lnk" onclick="go('about')">About</button>
+          <button class="f-lnk" onclick="go('contact')">Contact</button>
         </div>
       </div>
       <div>
-        <div class="footer-col-title">Contact</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <a href="tel:+919074496153" class="footer-link">+91 90744 96153</a>
-          <a href="mailto:nadhalabs@gmail.com" class="footer-link">nadhalabs@gmail.com</a>
-          <a href="mailto:nadhagroups@gmail.com" class="footer-link">nadhagroups@gmail.com</a>
-          <span style="font-size:13px;color:var(--text-3);margin-top:4px;">Kottiyam, Kollam, Kerala</span>
+        <div class="f-col-h">Contact</div>
+        <div class="f-links">
+          <a href="tel:+919074496153" class="f-lnk">+91 90744 96153</a>
+          <a href="mailto:nadhalabs@gmail.com" class="f-lnk">nadhalabs@gmail.com</a>
+          <span style="font-size:13px;color:var(--silver-3);font-weight:300;">Kottiyam, Kollam, Kerala</span>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="footer-copy">© 2025 Nadha Labs. All rights reserved.</p>
-      <div class="footer-legal">
-        <a href="#" onclick="navigate('legal')">Privacy &amp; Terms</a>
+      <p class="f-copy">© 2025 Nadha Labs. All rights reserved.</p>
+      <div style="display:flex;gap:20px;">
+        <a href="#" onclick="go('legal')" style="font-family:var(--font-mono);font-size:10px;color:var(--silver-3);letter-spacing:.1em;transition:color .3s;" onmouseover="this.style.color='#f0f0f0'" onmouseout="this.style.color='var(--silver-3)'">Privacy & Terms</a>
       </div>
     </div>
   </div>
@@ -1282,253 +1531,433 @@ footer { background: var(--bg-2); border-top: 1px solid var(--border); padding: 
 
 
 <script>
-// ============================================================
-// EMAILJS SETUP
-// Step 1 — Go to https://www.emailjs.com and create a free account.
-// Step 2 — Under "Email Services", connect your Gmail. Copy the Service ID.
-// Step 3 — Under "Email Templates", create a template. Use these variables:
-//           {{inquiry_type}}, {{from_name}}, {{from_email}},
-//           {{phone}}, {{service_or_course}}, {{message}}
-// Step 4 — Copy your Public Key from Account → General.
-// Step 5 — Replace the three values below and you are done.
-// ============================================================
-var EMAILJS_PUBLIC_KEY  = 'P6ov0AJQqyrr3V59u';    // ← paste your public key
-var EMAILJS_SERVICE_ID  = 'service_x180qio';    // ← paste your service ID
-var EMAILJS_TEMPLATE_ID = 'template_36xv739';   // ← paste your template ID
+// ════════════════════════════════════
+// EMAILJS
+// ════════════════════════════════════
+var EJ_KEY  = 'P6ov0AJQqyrr3V59u';
+var EJ_SVC  = 'service_x180qio';
+var EJ_TPL  = 'template_36xv739';
+emailjs.init(EJ_KEY);
 
-emailjs.init(EMAILJS_PUBLIC_KEY);
-
-// ============================================================
-// INTRO
-// ============================================================
-var introEl = document.getElementById('intro');
-function dismissIntro() {
-  if (!introEl) return;
-  introEl.classList.add('fade-out');
-  setTimeout(function() { introEl.classList.add('gone'); }, 750);
-}
-setTimeout(dismissIntro, 1800);
-document.addEventListener('DOMContentLoaded', function() { setTimeout(dismissIntro, 1800); });
-window.addEventListener('load', function() { setTimeout(dismissIntro, 1500); });
-
-// ============================================================
+// ════════════════════════════════════
 // CURSOR
-// ============================================================
-var dot  = document.getElementById('cursor-dot');
-var ring = document.getElementById('cursor-ring');
-var mx = 0, my = 0;
-document.addEventListener('mousemove', function(e) {
-  mx = e.clientX; my = e.clientY;
-  dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+// ════════════════════════════════════
+var dot=document.getElementById('c-dot'),ring=document.getElementById('c-ring');
+var mx=window.innerWidth/2,my=window.innerHeight/2;
+document.addEventListener('mousemove',function(e){
+  mx=e.clientX;my=e.clientY;
+  dot.style.left=mx+'px';dot.style.top=my+'px';
 });
-(function animRing() {
-  ring.style.left = mx + 'px'; ring.style.top = my + 'px';
-  requestAnimationFrame(animRing);
+(function raf(){ring.style.left=mx+'px';ring.style.top=my+'px';requestAnimationFrame(raf);})();
+
+// ════════════════════════════════════
+// INTRO
+// ════════════════════════════════════
+var intro=document.getElementById('intro');
+setTimeout(function(){
+  intro.classList.add('out');
+  setTimeout(function(){intro.classList.add('gone');startHeroAnim();},1000);
+},2000);
+
+// ════════════════════════════════════
+// HERO TEXT ANIMATION
+// ════════════════════════════════════
+function startHeroAnim(){
+  var el=document.getElementById('he');
+  var h=document.getElementById('hh');
+  var hs=document.getElementById('hs');
+  var ha=document.getElementById('ha');
+  var sc=document.getElementById('hscroll');
+  if(!el)return;
+  gsap.to(el,{opacity:1,y:0,duration:.8,ease:'power3.out',delay:.1});
+  gsap.to(h,{opacity:1,y:0,duration:1,ease:'power3.out',delay:.3});
+  gsap.to(hs,{opacity:1,y:0,duration:.8,ease:'power3.out',delay:.6});
+  gsap.to(ha,{opacity:1,y:0,duration:.8,ease:'power3.out',delay:.85});
+  gsap.to(sc,{opacity:1,duration:1,delay:1.5});
+}
+
+// ════════════════════════════════════
+// NAVBAR
+// ════════════════════════════════════
+window.addEventListener('scroll',function(){
+  document.getElementById('nav').classList.toggle('solid',window.scrollY>50);
+  observeAll();
+});
+
+// ════════════════════════════════════
+// MOBILE NAV
+// ════════════════════════════════════
+function toggleMob(){document.getElementById('mob').classList.toggle('open');}
+function mgo(p){document.getElementById('mob').classList.remove('open');go(p);}
+
+// ════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════
+var PAGES=['home','services','lab','courses','about','contact','legal'];
+function go(id){
+  PAGES.forEach(function(p){
+    var el=document.getElementById('page-'+p);
+    if(el)el.classList.remove('active');
+  });
+  var t=document.getElementById('page-'+id);
+  if(t){
+    t.classList.add('active');
+    window.scrollTo(0,0);
+    injectFooter(id);
+    setTimeout(observeAll,80);
+    setNavActive(id);
+    if(id==='home')animateChatDemo();
+  }
+}
+function setNavActive(id){
+  document.querySelectorAll('.nav-lnk').forEach(function(l){l.classList.remove('on');});
+  var map={home:0,services:1,lab:2,courses:3,about:4};
+  var ls=document.querySelectorAll('.nav-lnk');
+  if(map[id]!==undefined&&ls[map[id]])ls[map[id]].classList.add('on');
+}
+
+// ════════════════════════════════════
+// FOOTER INJECT
+// ════════════════════════════════════
+function injectFooter(id){
+  var el=document.getElementById('footer-'+id);
+  if(el&&el.innerHTML.trim()==='')el.innerHTML=document.getElementById('ftpl').innerHTML;
+}
+
+// ════════════════════════════════════
+// SCROLL REVEAL
+// ════════════════════════════════════
+function observeAll(){
+  var items=document.querySelectorAll('.rv:not(.vis)');
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target);}
+    });
+  },{threshold:0.07});
+  items.forEach(function(r){obs.observe(r);});
+}
+
+// ════════════════════════════════════
+// TABS
+// ════════════════════════════════════
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');
+  document.getElementById('tab-'+id).classList.add('on');
+}
+
+// ════════════════════════════════════
+// COOKIE
+// ════════════════════════════════════
+function closeCookie(){
+  localStorage.setItem('nl-ck','1');
+  document.getElementById('cookie').classList.remove('show');
+}
+
+// ════════════════════════════════════
+// CHAT DEMO ANIMATION
+// ════════════════════════════════════
+function animateChatDemo(){
+  var msgs=document.querySelectorAll('#chat-demo > *');
+  msgs.forEach(function(m,i){
+    setTimeout(function(){m.style.opacity='1';},600+(i*900));
+  });
+}
+
+// ════════════════════════════════════
+// LAB WAITLIST
+// ════════════════════════════════════
+function labWaitlist(){
+  var em=document.getElementById('lab-email');
+  var ok=document.getElementById('lab-ok');
+  if(!em||!em.value||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value)){
+    em.style.borderColor='rgba(200,80,80,0.6)';
+    setTimeout(function(){em.style.borderColor='';},2000);
+    return;
+  }
+  emailjs.send(EJ_SVC,EJ_TPL,{
+    inquiry_type:'AI Lab Waitlist',
+    from_name:'Waitlist Signup',
+    from_email:em.value,
+    phone:'N/A',
+    service_or_course:'Nadha Business AI Beta',
+    message:'Joined the AI tool waitlist'
+  }).then(function(){
+    ok.classList.add('show');em.value='';
+  },function(){ok.classList.add('show');});
+}
+
+// ════════════════════════════════════
+// FORM HELPERS
+// ════════════════════════════════════
+function isEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+
+function sendProject(){
+  var n=document.getElementById('pn').value.trim();
+  var e=document.getElementById('pe').value.trim();
+  var p=document.getElementById('pp').value.trim();
+  var s=document.getElementById('ps').value;
+  var m=document.getElementById('pm').value.trim();
+  var btn=document.getElementById('pb');
+  var ok=document.getElementById('p-ok');
+  var err=document.getElementById('p-err');
+  ok.classList.remove('show');err.classList.remove('show');
+  if(!n||!e||!s||!m){err.textContent='Please fill in all required fields.';err.classList.add('show');return;}
+  if(!isEmail(e)){err.textContent='Please enter a valid email.';err.classList.add('show');return;}
+  btn.disabled=true;btn.textContent='Sending…';
+  emailjs.send(EJ_SVC,EJ_TPL,{inquiry_type:'Project Enquiry',from_name:n,from_email:e,phone:p||'Not provided',service_or_course:s,message:m}).then(function(){
+    ok.classList.add('show');btn.textContent='Sent ✓';
+    ['pn','pe','pp','pm'].forEach(function(id){document.getElementById(id).value='';});
+    document.getElementById('ps').value='';
+  },function(){
+    err.textContent='Something went wrong. Email us at nadhalabs@gmail.com';
+    err.classList.add('show');btn.disabled=false;btn.textContent='Send Enquiry';
+  });
+}
+
+function sendCourse(){
+  var n=document.getElementById('cn').value.trim();
+  var e=document.getElementById('ce').value.trim();
+  var p=document.getElementById('cp').value.trim();
+  var c=document.getElementById('cc').value;
+  var m=document.getElementById('cm').value.trim();
+  var btn=document.getElementById('cb');
+  var ok=document.getElementById('c-ok');
+  var err=document.getElementById('c-err');
+  ok.classList.remove('show');err.classList.remove('show');
+  if(!n||!e||!c){err.textContent='Please fill in all required fields.';err.classList.add('show');return;}
+  if(!isEmail(e)){err.textContent='Please enter a valid email.';err.classList.add('show');return;}
+  btn.disabled=true;btn.textContent='Sending…';
+  emailjs.send(EJ_SVC,EJ_TPL,{inquiry_type:'Course Registration',from_name:n,from_email:e,phone:p||'Not provided',service_or_course:c,message:m||'No message'}).then(function(){
+    ok.classList.add('show');btn.textContent='Sent ✓';
+    ['cn','ce','cp','cm'].forEach(function(id){document.getElementById(id).value='';});
+    document.getElementById('cc').value='';
+  },function(){
+    err.textContent='Something went wrong. Email us at nadhalabs@gmail.com';
+    err.classList.add('show');btn.disabled=false;btn.textContent='Register Interest';
+  });
+}
+
+// ════════════════════════════════════
+// THREE.JS — HERO ORBIT SCENE
+// ════════════════════════════════════
+(function(){
+  var canvas=document.getElementById('orbit-canvas');
+  if(!canvas)return;
+
+  var W=canvas.offsetWidth,H=canvas.offsetHeight;
+  var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:true});
+  renderer.setSize(W,H);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setClearColor(0x000000,0);
+
+  var scene=new THREE.Scene();
+  var camera=new THREE.PerspectiveCamera(60,W/H,.1,1000);
+  camera.position.set(0,0,5);
+
+  // Central sphere
+  var geo=new THREE.IcosahedronGeometry(1.2,4);
+  var mat=new THREE.MeshStandardMaterial({
+    color:0x1a1a22,
+    metalness:.9,roughness:.2,
+    wireframe:false
+  });
+  var sphere=new THREE.Mesh(geo,mat);
+  scene.add(sphere);
+
+  // Wireframe overlay
+  var wgeo=new THREE.IcosahedronGeometry(1.22,2);
+  var wmat=new THREE.MeshBasicMaterial({color:0x404050,wireframe:true,transparent:true,opacity:.3});
+  var wire=new THREE.Mesh(wgeo,wmat);
+  scene.add(wire);
+
+  // Orbiting rings
+  function makeRing(r,tilt,col){
+    var rg=new THREE.TorusGeometry(r,.004,8,120);
+    var rm=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.5});
+    var ring=new THREE.Mesh(rg,rm);
+    ring.rotation.x=tilt;
+    scene.add(ring);
+    return ring;
+  }
+  var r1=makeRing(1.8,Math.PI/4,0x888899);
+  var r2=makeRing(2.2,Math.PI/2.2,0x666677);
+  var r3=makeRing(2.6,Math.PI/1.6,0x444455);
+
+  // Particles
+  var pCount=1200;
+  var pGeo=new THREE.BufferGeometry();
+  var pPos=new Float32Array(pCount*3);
+  for(var i=0;i<pCount*3;i++)pPos[i]=(Math.random()-.5)*16;
+  pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+  var pMat=new THREE.PointsMaterial({color:0x888899,size:.025,transparent:true,opacity:.6});
+  var particles=new THREE.Points(pGeo,pMat);
+  scene.add(particles);
+
+  // Orbiting dots
+  var orbitDots=[];
+  function makeDot(orbitR,speed,phase,col){
+    var dg=new THREE.SphereGeometry(.045,8,8);
+    var dm=new THREE.MeshBasicMaterial({color:col});
+    var d=new THREE.Mesh(dg,dm);
+    scene.add(d);
+    orbitDots.push({mesh:d,r:orbitR,spd:speed,ph:phase});
+  }
+  makeDot(1.8,.8,0,0xccccdd);
+  makeDot(1.8,.8,Math.PI*.66,0x999aaa);
+  makeDot(2.2,.5,Math.PI*.33,0xaaaacc);
+  makeDot(2.6,.35,Math.PI,0x888899);
+
+  // Lighting
+  var al=new THREE.AmbientLight(0xffffff,.3);
+  scene.add(al);
+  var pl=new THREE.PointLight(0xffffff,1.5,20);
+  pl.position.set(4,4,4);scene.add(pl);
+  var pl2=new THREE.PointLight(0xaaaacc,.8,20);
+  pl2.position.set(-4,-2,2);scene.add(pl2);
+
+  // Mouse orbit drag
+  var isDrag=false,startX=0,startY=0,rotX=0,rotY=0,tarX=0,tarY=0;
+  canvas.addEventListener('mousedown',function(e){isDrag=true;startX=e.clientX;startY=e.clientY;});
+  window.addEventListener('mousemove',function(e){
+    if(!isDrag)return;
+    tarY+=(e.clientX-startX)*.005;
+    tarX+=(e.clientY-startY)*.005;
+    startX=e.clientX;startY=e.clientY;
+  });
+  window.addEventListener('mouseup',function(){isDrag=false;});
+  canvas.addEventListener('touchstart',function(e){isDrag=true;startX=e.touches[0].clientX;startY=e.touches[0].clientY;});
+  canvas.addEventListener('touchmove',function(e){
+    if(!isDrag)return;
+    tarY+=(e.touches[0].clientX-startX)*.005;
+    tarX+=(e.touches[0].clientY-startY)*.005;
+    startX=e.touches[0].clientX;startY=e.touches[0].clientY;
+    e.preventDefault();
+  },{passive:false});
+  canvas.addEventListener('touchend',function(){isDrag=false;});
+
+  // Mouse parallax (subtle)
+  var mox=0,moy=0;
+  document.addEventListener('mousemove',function(e){
+    mox=(e.clientX/window.innerWidth-.5)*.3;
+    moy=(e.clientY/window.innerHeight-.5)*.3;
+  });
+
+  var t=0;
+  function animate(){
+    requestAnimationFrame(animate);
+    t+=0.008;
+
+    rotX+=(tarX-rotX)*.06;
+    rotY+=(tarY-rotY)*.06;
+
+    sphere.rotation.x=rotX+moy*.2+t*.04;
+    sphere.rotation.y=rotY+mox*.2+t*.06;
+    wire.rotation.x=sphere.rotation.x;
+    wire.rotation.y=sphere.rotation.y;
+
+    r1.rotation.z=t*.3;
+    r2.rotation.z=-t*.2;
+    r3.rotation.z=t*.15;
+
+    orbitDots.forEach(function(d){
+      var a=t*d.spd+d.ph;
+      d.mesh.position.x=Math.cos(a)*d.r;
+      d.mesh.position.y=Math.sin(a)*d.r*.4;
+      d.mesh.position.z=Math.sin(a)*d.r*.6;
+    });
+
+    particles.rotation.y=t*.02;
+    particles.rotation.x=t*.01;
+
+    pl.position.x=Math.sin(t*.5)*5;
+    pl.position.z=Math.cos(t*.5)*5;
+
+    renderer.render(scene,camera);
+  }
+  animate();
+
+  window.addEventListener('resize',function(){
+    W=canvas.offsetWidth;H=canvas.offsetHeight;
+    camera.aspect=W/H;camera.updateProjectionMatrix();
+    renderer.setSize(W,H);
+  });
 })();
 
-// ============================================================
-// NAVBAR SCROLL
-// ============================================================
-window.addEventListener('scroll', function() {
-  var nav = document.getElementById('navbar');
-  if (window.scrollY > 40) nav.classList.add('scrolled');
-  else nav.classList.remove('scrolled');
-});
+// ════════════════════════════════════
+// THREE.JS — AI CANVAS (neural net)
+// ════════════════════════════════════
+function initAICanvas(canvasId){
+  var canvas=document.getElementById(canvasId);
+  if(!canvas)return;
+  var W=canvas.offsetWidth,H=canvas.offsetHeight;
+  if(W===0||H===0)return;
 
-// ============================================================
-// MOBILE NAV
-// ============================================================
-function toggleMobile() { document.getElementById('mobile-overlay').classList.toggle('open'); }
-function go(id) { toggleMobile(); navigate(id); }
+  var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:true});
+  renderer.setSize(W,H);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setClearColor(0x000000,0);
+  var scene=new THREE.Scene();
+  var camera=new THREE.PerspectiveCamera(55,W/H,.1,100);
+  camera.position.z=6;
 
-// ============================================================
-// NAVIGATION
-// ============================================================
-var PAGES = ['home', 'services', 'courses', 'about', 'contact', 'legal'];
-
-function navigate(id) {
-  PAGES.forEach(function(p) {
-    var el = document.getElementById('page-' + p);
-    if (el) el.classList.remove('active');
-  });
-  var target = document.getElementById('page-' + id);
-  if (target) {
-    target.classList.add('active');
-    window.scrollTo(0, 0);
-    injectFooter(id);
-    setTimeout(observeReveals, 80);
-    updateNavActive(id);
+  // Neural network nodes
+  var nodes=[];
+  var nodeGeo=new THREE.SphereGeometry(.05,8,8);
+  for(var i=0;i<40;i++){
+    var nm=new THREE.MeshBasicMaterial({color:0x888899,transparent:true,opacity:.7});
+    var n=new THREE.Mesh(nodeGeo,nm);
+    n.position.set((Math.random()-.5)*8,(Math.random()-.5)*5,(Math.random()-.5)*3);
+    n.userData={ox:n.position.x,oy:n.position.y,oz:n.position.z,t:Math.random()*Math.PI*2};
+    scene.add(n);nodes.push(n);
   }
-}
 
-function updateNavActive(id) {
-  document.querySelectorAll('.nav-link').forEach(function(l) { l.classList.remove('active'); });
-  var map    = { home: 0, services: 1, courses: 2, about: 3 };
-  var links  = document.querySelectorAll('.nav-link');
-  if (map[id] !== undefined && links[map[id]]) links[map[id]].classList.add('active');
-}
-
-// ============================================================
-// FOOTER INJECT
-// ============================================================
-function injectFooter(id) {
-  var el = document.getElementById('footer-' + id);
-  if (el && el.innerHTML.trim() === '') {
-    el.innerHTML = document.getElementById('ftpl').innerHTML;
+  // Connections
+  var lineMat=new THREE.LineBasicMaterial({color:0x444455,transparent:true,opacity:.25});
+  for(var i=0;i<nodes.length;i++){
+    for(var j=i+1;j<nodes.length;j++){
+      if(nodes[i].position.distanceTo(nodes[j].position)<3){
+        var lg=new THREE.BufferGeometry().setFromPoints([nodes[i].position,nodes[j].position]);
+        scene.add(new THREE.Line(lg,lineMat));
+      }
+    }
   }
-}
 
-// ============================================================
-// SCROLL REVEALS
-// ============================================================
-function observeReveals() {
-  var items = document.querySelectorAll('.reveal:not(.visible)');
-  var obs = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+  var t2=0;
+  function loop(){
+    requestAnimationFrame(loop);
+    t2+=.008;
+    nodes.forEach(function(n){
+      n.position.y=n.userData.oy+Math.sin(t2+n.userData.t)*.15;
+      n.position.x=n.userData.ox+Math.cos(t2*.7+n.userData.t)*.1;
     });
-  }, { threshold: 0.08 });
-  items.forEach(function(r) { obs.observe(r); });
+    scene.rotation.y=t2*.05;
+    renderer.render(scene,camera);
+  }
+  loop();
 }
 
-// ============================================================
+// ════════════════════════════════════
 // INIT
-// ============================================================
-window.addEventListener('load', function() {
+// ════════════════════════════════════
+window.addEventListener('load',function(){
   injectFooter('home');
-  observeReveals();
-  if (!localStorage.getItem('nl-cookie')) {
-    setTimeout(function() { document.getElementById('cookie-banner').classList.add('show'); }, 2800);
+  observeAll();
+  animateChatDemo();
+  setTimeout(function(){initAICanvas('ai-canvas');},100);
+  if(!localStorage.getItem('nl-ck')){
+    setTimeout(function(){document.getElementById('cookie').classList.add('show');},3500);
   }
 });
-window.addEventListener('scroll', observeReveals);
+window.addEventListener('scroll',observeAll);
 
-// ============================================================
-// COOKIE
-// ============================================================
-function closeCookie() {
-  localStorage.setItem('nl-cookie', '1');
-  document.getElementById('cookie-banner').classList.remove('show');
-}
-
-// ============================================================
-// TABS
-// ============================================================
-function switchTab(id, btn) {
-  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
-  document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
-  btn.classList.add('active');
-  document.getElementById('tab-' + id).classList.add('active');
-}
-
-// ============================================================
-// HELPERS
-// ============================================================
-function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
-
-// ============================================================
-// FORM: PROJECT ENQUIRY
-// ============================================================
-function submitProject() {
-  var name    = document.getElementById('proj-name').value.trim();
-  var email   = document.getElementById('proj-email').value.trim();
-  var phone   = document.getElementById('proj-phone').value.trim();
-  var service = document.getElementById('proj-service').value;
-  var message = document.getElementById('proj-message').value.trim();
-  var btn     = document.getElementById('proj-btn');
-  var success = document.getElementById('proj-success');
-  var error   = document.getElementById('proj-error');
-
-  success.classList.remove('show');
-  error.classList.remove('show');
-
-  if (!name || !email || !service || !message) {
-    error.textContent = 'Please fill in all required fields.';
-    error.classList.add('show');
-    return;
+// Init AI canvas on lab page navigation
+var _go=go;
+go=function(id){
+  _go(id);
+  if(id==='lab'){
+    setTimeout(function(){initAICanvas('ai-canvas-2');},150);
   }
-  if (!isValidEmail(email)) {
-    error.textContent = 'Please enter a valid email address.';
-    error.classList.add('show');
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = 'Sending…';
-
-  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    inquiry_type:     'Project Enquiry',
-    from_name:        name,
-    from_email:       email,
-    phone:            phone || 'Not provided',
-    service_or_course: service,
-    message:          message
-  }).then(function() {
-    success.classList.add('show');
-    btn.textContent = 'Sent ✓';
-    ['proj-name', 'proj-email', 'proj-phone', 'proj-message'].forEach(function(id) {
-      document.getElementById(id).value = '';
-    });
-    document.getElementById('proj-service').value = '';
-  }, function() {
-    error.textContent = 'Something went wrong. Please email us directly at nadhalabs@gmail.com';
-    error.classList.add('show');
-    btn.disabled = false;
-    btn.textContent = 'Send Enquiry';
-  });
-}
-
-// ============================================================
-// FORM: COURSE REGISTRATION
-// ============================================================
-function submitCourse() {
-  var name    = document.getElementById('crs-name').value.trim();
-  var email   = document.getElementById('crs-email').value.trim();
-  var phone   = document.getElementById('crs-phone').value.trim();
-  var course  = document.getElementById('crs-course').value;
-  var message = document.getElementById('crs-message').value.trim();
-  var btn     = document.getElementById('crs-btn');
-  var success = document.getElementById('crs-success');
-  var error   = document.getElementById('crs-error');
-
-  success.classList.remove('show');
-  error.classList.remove('show');
-
-  if (!name || !email || !course) {
-    error.textContent = 'Please fill in all required fields.';
-    error.classList.add('show');
-    return;
-  }
-  if (!isValidEmail(email)) {
-    error.textContent = 'Please enter a valid email address.';
-    error.classList.add('show');
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = 'Sending…';
-
-  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    inquiry_type:     'Course Registration',
-    from_name:        name,
-    from_email:       email,
-    phone:            phone || 'Not provided',
-    service_or_course: course,
-    message:          message || 'No additional message'
-  }).then(function() {
-    success.classList.add('show');
-    btn.textContent = 'Sent ✓';
-    ['crs-name', 'crs-email', 'crs-phone', 'crs-message'].forEach(function(id) {
-      document.getElementById(id).value = '';
-    });
-    document.getElementById('crs-course').value = '';
-  }, function() {
-    error.textContent = 'Something went wrong. Please email us directly at nadhalabs@gmail.com';
-    error.classList.add('show');
-    btn.disabled = false;
-    btn.textContent = 'Register Interest';
-  });
-}
+};
 </script>
 </body>
 </html>
